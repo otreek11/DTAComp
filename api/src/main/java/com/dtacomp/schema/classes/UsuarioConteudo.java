@@ -39,7 +39,8 @@ public class UsuarioConteudo {
     @Column(name="idx_posicao")
     private int idxPosicao;
 
-    @Embeddable 
+    @Embeddable
+    @Data 
     static class UsuarioConteudoPK implements Serializable {
         @Column(name="id_usuario")
         UUID idUsuario;
