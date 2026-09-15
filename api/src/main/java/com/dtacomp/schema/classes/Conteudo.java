@@ -58,6 +58,9 @@ public class Conteudo {
     @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
     private LocalDate data;
 
+    @Column(name="id_externo")
+    private String idExterno;
+
     @OneToMany 
     @JoinTable(
         name="conteudo_tag",
@@ -68,14 +71,6 @@ public class Conteudo {
 
     @OneToMany(mappedBy = "conteudo")
     private Set<Revisao> revisoes;
-
-    @ManyToMany
-    @JoinTable(
-        name = "usuario_conteudo",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_conteudo") 
-    )
-    private Set<Usuario> autores;
     
     public enum TipoConteudo {
         TEXTO(0, "texto"),

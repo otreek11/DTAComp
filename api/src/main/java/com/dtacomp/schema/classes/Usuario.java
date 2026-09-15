@@ -58,9 +58,6 @@ public class Usuario {
     
     @Column(name="id_externo")
     private String idExterno;
-
-    @ManyToMany(mappedBy = "autores")
-    private Set<Conteudo> publicacoes;
     
     public enum TipoPerfil {
         MEMBRO(0, "membro"),

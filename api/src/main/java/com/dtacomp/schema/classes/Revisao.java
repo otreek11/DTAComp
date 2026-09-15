@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -33,14 +34,17 @@ public class Revisao {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne 
+    @ManyToOne  
     @JoinColumn(name="id_conteudo")
     private Conteudo conteudo;
 
-    @OneToOne 
+    @ManyToOne 
     @JoinColumn(name="id_revisor")
     private Usuario revisor;
 
     @Column(name="status")
     private Conteudo.StatusConteudo status;
+
+    @Column(name="parecer_humano")
+    private String parecerHumano;
 }

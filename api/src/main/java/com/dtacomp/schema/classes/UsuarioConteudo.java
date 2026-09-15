@@ -9,6 +9,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,18 +27,20 @@ public class UsuarioConteudo {
     private UsuarioConteudoPK pk;
 
     @ManyToOne 
+    @MapsId 
     @JoinColumn(name="id_usuario")
     private Usuario usuario;
     
     @ManyToOne 
+    @MapsId
     @JoinColumn(name="id_conteudo")
     private Conteudo conteudo;
 
     @Column(name="idx_posicao")
-    private int idx_posicao;
+    private int idxPosicao;
 
     @Embeddable 
-    class UsuarioConteudoPK implements Serializable {
+    static class UsuarioConteudoPK implements Serializable {
         @Column(name="id_usuario")
         UUID idUsuario;
 
