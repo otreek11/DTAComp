@@ -27,12 +27,12 @@ public class UsuarioConteudo {
     private UsuarioConteudoPK pk;
 
     @ManyToOne 
-    @MapsId 
+    @MapsId("idUsuario")
     @JoinColumn(name="id_usuario")
     private Usuario usuario;
     
     @ManyToOne 
-    @MapsId
+    @MapsId("idConteudo")
     @JoinColumn(name="id_conteudo")
     private Conteudo conteudo;
 
@@ -41,7 +41,7 @@ public class UsuarioConteudo {
 
     @Embeddable
     @Data 
-    static class UsuarioConteudoPK implements Serializable {
+    public static class UsuarioConteudoPK implements Serializable {
         @Column(name="id_usuario")
         UUID idUsuario;
 

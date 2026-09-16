@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -60,7 +61,7 @@ public class Conteudo {
     @Column(name="id_externo")
     private String idExterno;
 
-    @OneToMany 
+    @ManyToMany 
     @JoinTable(
         name="conteudo_tag",
         joinColumns = @JoinColumn(name="id_conteudo"),
