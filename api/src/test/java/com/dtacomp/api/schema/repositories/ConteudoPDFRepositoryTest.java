@@ -10,8 +10,6 @@ import com.dtacomp.api.schema.classes.Conteudo;
 import com.dtacomp.api.schema.classes.ConteudoPDF;
 import com.dtacomp.api.schema.classes.Conteudo.StatusConteudo;
 import com.dtacomp.api.schema.classes.Conteudo.TipoConteudo;
-import com.dtacomp.api.schema.repositories.ConteudoPDFRepository;
-import com.dtacomp.api.schema.repositories.ConteudoRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;

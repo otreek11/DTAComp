@@ -14,7 +14,7 @@ public class ConteudoTextoTest {
     public void deveConstruirComBuilder() {
         UUID idConteudo = UUID.randomUUID();
         Conteudo conteudo = Conteudo.builder().id(idConteudo).titulo("Teste").build();
-        ConteudoTexto conteudo_pdf = ConteudoTexto.builder().idConteudo(idConteudo).conteudo(conteudo).corpoHtml("Lorem Ipsom Dolor").build();
+        ConteudoTexto conteudo_texto = ConteudoTexto.builder().idConteudo(idConteudo).conteudo(conteudo).corpoHtml("Lorem Ipsom Dolor").build();
 
         assertThat(conteudo_pdf.getIdConteudo()).isEqualTo(idConteudo);
         assertThat(conteudo_pdf.getConteudo()).isEqualTo(conteudo);

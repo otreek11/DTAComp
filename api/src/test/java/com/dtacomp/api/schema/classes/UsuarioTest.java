@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
 
 import java.util.stream.Stream;
