@@ -7,8 +7,6 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import com.dtacomp.api.schema.classes.Instituicao;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
-import com.dtacomp.api.schema.repositories.IntituicaoRepository;
-import com.dtacomp.api.schema.repositories.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +18,7 @@ public class UsuarioRepositoryTest {
     @Autowired 
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private IntituicaoRepository instituicaoRepository;
+    private InstituicaoRepository instituicaoRepository;
 
     @Test 
     public void deveEncontrarUsuarioPorEmail() {

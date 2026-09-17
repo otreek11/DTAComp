@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 
 @DataJpaTest
-public class conteudoTextoRepositoryTest {
+public class ConteudoTextoRepositoryTest {
     @Autowired 
     private ConteudoTextRepository conteudoTextoRepository;
     @Autowired 

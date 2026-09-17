@@ -16,7 +16,7 @@ public class ImagemTest {
         Imagem imagem = Imagem.builder().id(idImagem).conteudoTexto(conteudo_texto).urlImage("https://exemplo.com/image.png").legenda("Teste").build();
         
         assertThat(imagem.getId()).isEqualTo(idImagem);
-        assertThat(imagem.getConteudo()).isEqualTo(conteudo_texto);
+        assertThat(imagem.getConteudoTexto()).isEqualTo(conteudo_texto);
         assertThat(imagem.getUrlImage()).isEqualTo("https://exemplo.com/image.png");
         assertThat(imagem.getLegenda()).isEqualTo("Teste");
     }

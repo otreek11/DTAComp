@@ -16,8 +16,8 @@ public class ConteudoTextoTest {
         Conteudo conteudo = Conteudo.builder().id(idConteudo).titulo("Teste").build();
         ConteudoTexto conteudo_texto = ConteudoTexto.builder().idConteudo(idConteudo).conteudo(conteudo).corpoHtml("Lorem Ipsom Dolor").build();
 
-        assertThat(conteudo_pdf.getIdConteudo()).isEqualTo(idConteudo);
-        assertThat(conteudo_pdf.getConteudo()).isEqualTo(conteudo);
-        assertThat(conteudo_pdf.getCorpoHtml()).isEqualTo("Lorem Ipsom Dolor");
+        assertThat(conteudo_texto.getIdConteudo()).isEqualTo(idConteudo);
+        assertThat(conteudo_texto.getConteudo()).isEqualTo(conteudo);
+        assertThat(conteudo_texto.getCorpoHtml()).isEqualTo("Lorem Ipsom Dolor");
     }
 }

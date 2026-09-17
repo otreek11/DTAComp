@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dtacomp.api.schema.classes.Instituicao;
 
-public interface IntituicaoRepository 
+public interface InstituicaoRepository 
     extends JpaRepository<Instituicao, UUID> {}
