@@ -1,4 +1,4 @@
-package com.dtacomp.schema.repositories;
+package com.dtacomp.api.schema.repositories;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dtacomp.schema.classes.Usuario;
+import com.dtacomp.api.schema.classes.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     Optional<Usuario> findByEmail(String email);

@@ -1,4 +1,4 @@
-package com.dtacomp.schema.classes;
+package com.dtacomp.api.schema.classes;
 
 import java.time.LocalDate;
 import java.util.Set;

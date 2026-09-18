@@ -1,4 +1,4 @@
-package com.dtacomp.schema.repositories;
+package com.dtacomp.api.schema.repositories;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.dtacomp.schema.classes.Conteudo;
+import com.dtacomp.api.schema.classes.Conteudo;
 
 public interface ConteudoRepository extends JpaRepository<Conteudo, UUID> {
     List<Conteudo> findByStatus(Conteudo.StatusConteudo status);

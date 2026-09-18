@@ -1,12 +1,12 @@
-package com.dtacomp.schema.repositories;
+package com.dtacomp.api.schema.repositories;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dtacomp.schema.classes.Conteudo;
-import com.dtacomp.schema.classes.Revisao;
+import com.dtacomp.api.schema.classes.Conteudo;
+import com.dtacomp.api.schema.classes.Revisao;
 
 public interface RevisaoRepository extends JpaRepository<Revisao, UUID> {
     List<Revisao> findByRevisor_Id(UUID idRevisor);

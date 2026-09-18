@@ -1,4 +1,4 @@
-package com.dtacomp.schema.classes;
+package com.dtacomp.api.schema.classes;
 
 import java.util.UUID;
 
@@ -18,29 +18,32 @@ import lombok.NoArgsConstructor;
 
 @Entity 
 @Table(
-    name="imagem",
+    name="revisao",
     indexes = {
-        @Index(name="idx_imagem_conteudo_texto", columnList="id_conteudo_texto")
+        @Index(name="idx_revisao_conteudo", columnList="id_conteudo"),
+        @Index(name="idx_revisao_revisor", columnList="id_revisor")
     }
 )
 @Data 
 @Builder 
 @NoArgsConstructor 
 @AllArgsConstructor 
-public class Imagem {
-    
+public class Revisao {
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="id")
     private UUID id;
-    
-    @ManyToOne 
-    @JoinColumn(name="id_conteudo_texto")
-    private ConteudoTexto conteudoTexto;
 
-    @Column(name="url_image")
-    private String urlImage;
-    
-    @Column(name="legenda")
-    private String legenda;
+    @ManyToOne  
+    @JoinColumn(name="id_conteudo")
+    private Conteudo conteudo;
+
+    @ManyToOne 
+    @JoinColumn(name="id_revisor")
+    private Usuario revisor;
+
+    @Column(name="status")
+    private Conteudo.StatusConteudo status;
+
+    @Column(name="parecer_humano")
+    private String parecerHumano;
 }

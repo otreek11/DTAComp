@@ -1,4 +1,4 @@
-package com.dtacomp.schema.classes;
+package com.dtacomp.api.schema.classes;
 
 import java.util.UUID;
 
@@ -8,19 +8,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity 
-@Table(name="instituicao")
+@Table(name = "tag")
 @Data 
-@Builder
+@Builder 
 @NoArgsConstructor 
 @AllArgsConstructor 
-public class Instituicao {
+public class Tag {
+
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="id")
@@ -28,7 +28,4 @@ public class Instituicao {
     
     @Column(name="nome")
     private String nome;
-
-    @Column(name="sigla")
-    private String sigla;
 }

@@ -1,6 +1,5 @@
-package com.dtacomp.schema.classes;
+package com.dtacomp.api.schema.classes;
 
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -8,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,15 +15,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity 
-@Table(name="conteudo_texto")
+@Table(name="conteudo_pdf")
 @Data 
 @Builder 
 @NoArgsConstructor 
 @AllArgsConstructor 
-public class ConteudoTexto {
+public class ConteudoPDF {
     
-    @Id
-    @Column(name = "id_conteudo")
+    @Id 
+    @Column(name="id_conteudo")
     private UUID idConteudo;
 
     @OneToOne
@@ -33,9 +31,9 @@ public class ConteudoTexto {
     @JoinColumn(name = "id_conteudo")
     private Conteudo conteudo;
 
-    @OneToMany(mappedBy = "conteudoTexto")
-    private Set<Imagem> imagens;
+    @Column(name="url_arquivo")
+    private String urlArquivo;
 
-    @Column(name = "corpo_html")
-    private String corpoHtml;
+    @Column(name="tamanho_bytes")
+    private float tamanhoBytes;
 }
