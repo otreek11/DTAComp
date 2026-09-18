@@ -11,10 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Conteudo;
-import com.dtacomp.schema.classes.UsuarioConteudo;
-import com.dtacomp.schema.classes.UsuarioConteudo.UsuarioConteudoPK;
-import com.dtacomp.schema.repositories.UsuarioConteudoRepository;
+import com.dtacomp.api.schema.classes.Conteudo;
+import com.dtacomp.api.schema.classes.UsuarioConteudo;
+import com.dtacomp.api.schema.classes.UsuarioConteudo.UsuarioConteudoPK;
+import com.dtacomp.api.schema.repositories.UsuarioConteudoRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

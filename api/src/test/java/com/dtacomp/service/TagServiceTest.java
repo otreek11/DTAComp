@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Tag;
-import com.dtacomp.schema.repositories.TagRepository;
+import com.dtacomp.api.schema.classes.Tag;
+import com.dtacomp.api.schema.repositories.TagRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

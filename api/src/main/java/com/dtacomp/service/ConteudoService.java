@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dtacomp.schema.classes.Conteudo;
-import com.dtacomp.schema.repositories.ConteudoRepository;
+import com.dtacomp.api.schema.classes.Conteudo;
+import com.dtacomp.api.schema.repositories.ConteudoRepository;
 
 @Service
 @Transactional(readOnly = true)

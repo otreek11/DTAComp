@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dtacomp.schema.classes.ConteudoPDF;
-import com.dtacomp.schema.repositories.ConteudoPDFRepository;
+import com.dtacomp.api.schema.classes.ConteudoPDF;
+import com.dtacomp.api.schema.repositories.ConteudoPDFRepository;
 
 @Service
 @Transactional(readOnly = true)

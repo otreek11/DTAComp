@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dtacomp.schema.classes.Imagem;
-import com.dtacomp.schema.repositories.ImagemRepository;
+import com.dtacomp.api.schema.classes.Imagem;
+import com.dtacomp.api.schema.repositories.ImagemRepository;
 
 @Service
 @Transactional(readOnly = true)

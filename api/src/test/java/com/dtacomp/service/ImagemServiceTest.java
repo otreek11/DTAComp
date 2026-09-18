@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Imagem;
-import com.dtacomp.schema.repositories.ImagemRepository;
+import com.dtacomp.api.schema.classes.Imagem;
+import com.dtacomp.api.schema.repositories.ImagemRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

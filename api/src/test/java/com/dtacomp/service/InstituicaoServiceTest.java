@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Instituicao;
-import com.dtacomp.schema.repositories.IntituicaoRepository;
+import com.dtacomp.api.schema.classes.Instituicao;
+import com.dtacomp.api.schema.repositories.InstituicaoRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 class InstituicaoServiceTest {
 
     @Mock
-    private IntituicaoRepository repository;
+    private InstituicaoRepository repository;
 
     @InjectMocks
     private InstituicaoService service;
