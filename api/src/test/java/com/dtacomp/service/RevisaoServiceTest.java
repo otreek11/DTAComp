@@ -11,9 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Conteudo.StatusConteudo;
-import com.dtacomp.schema.classes.Revisao;
-import com.dtacomp.schema.repositories.RevisaoRepository;
+import com.dtacomp.api.schema.classes.Conteudo.StatusConteudo;
+import com.dtacomp.api.schema.classes.Revisao;
+import com.dtacomp.api.schema.repositories.RevisaoRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

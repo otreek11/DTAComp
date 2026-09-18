@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.ConteudoTexto;
-import com.dtacomp.schema.repositories.ConteudoTextRepository;
+import com.dtacomp.api.schema.classes.ConteudoTexto;
+import com.dtacomp.api.schema.repositories.ConteudoTextRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

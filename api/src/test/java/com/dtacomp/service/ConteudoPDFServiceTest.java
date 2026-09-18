@@ -12,8 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.ConteudoPDF;
-import com.dtacomp.schema.repositories.ConteudoPDFRepository;
+import com.dtacomp.api.schema.classes.ConteudoPDF;
+import com.dtacomp.api.schema.repositories.ConteudoPDFRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +34,7 @@ class ConteudoPDFServiceTest {
     void setUp(){
         id = UUID.randomUUID();
         conteudo = ConteudoPDF.builder()
+                .idConteudo(id)
                 .urlArquivo("https://exemplo.com/arquivo.pdf")
                 .tamanhoBytes(1024f)
                 .build();

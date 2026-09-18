@@ -13,10 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Conteudo;
-import com.dtacomp.schema.classes.Conteudo.StatusConteudo;
-import com.dtacomp.schema.classes.Conteudo.TipoConteudo;
-import com.dtacomp.schema.repositories.ConteudoRepository;
+import com.dtacomp.api.schema.classes.Conteudo;
+import com.dtacomp.api.schema.classes.Conteudo.StatusConteudo;
+import com.dtacomp.api.schema.classes.Conteudo.TipoConteudo;
+import com.dtacomp.api.schema.repositories.ConteudoRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

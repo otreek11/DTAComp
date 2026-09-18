@@ -11,9 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dtacomp.schema.classes.Usuario;
-import com.dtacomp.schema.classes.Usuario.TipoPerfil;
-import com.dtacomp.schema.repositories.UsuarioRepository;
+import com.dtacomp.api.schema.classes.Usuario;
+import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
+import com.dtacomp.api.schema.repositories.UsuarioRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

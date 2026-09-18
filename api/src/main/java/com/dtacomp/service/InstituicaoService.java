@@ -6,16 +6,16 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dtacomp.schema.classes.Instituicao;
-import com.dtacomp.schema.repositories.IntituicaoRepository;
+import com.dtacomp.api.schema.classes.Instituicao;
+import com.dtacomp.api.schema.repositories.InstituicaoRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class InstituicaoService {
 
-    private final IntituicaoRepository repository;
+    private final InstituicaoRepository repository;
 
-    public InstituicaoService(IntituicaoRepository repository) {
+    public InstituicaoService(InstituicaoRepository repository) {
         this.repository = repository;
     }
 
