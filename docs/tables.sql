@@ -106,7 +106,6 @@ CREATE TABLE revisao (
     id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     id_conteudo    UUID NOT NULL REFERENCES conteudo (id) ON DELETE CASCADE,
     id_revisor     UUID NOT NULL REFERENCES usuario (id),
-    sugestoes_ia   TEXT,
     parecer_humano TEXT,
     status         INTEGER NOT NULL
 );
