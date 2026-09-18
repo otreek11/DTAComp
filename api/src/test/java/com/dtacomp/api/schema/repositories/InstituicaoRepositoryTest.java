@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.dtacomp.api.schema.classes.Instituicao;
 
 @DataJpaTest 
-public class instituicaoRepositoryTest {
+public class InstituicaoRepositoryTest {
     @Autowired 
     private InstituicaoRepository instituicaoRepository;
 
