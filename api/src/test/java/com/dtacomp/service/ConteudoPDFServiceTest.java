@@ -34,6 +34,7 @@ class ConteudoPDFServiceTest {
     void setUp(){
         id = UUID.randomUUID();
         conteudo = ConteudoPDF.builder()
+                .idConteudo(id)
                 .urlArquivo("https://exemplo.com/arquivo.pdf")
                 .tamanhoBytes(1024f)
                 .build();
