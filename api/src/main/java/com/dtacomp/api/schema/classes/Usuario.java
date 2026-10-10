@@ -1,6 +1,12 @@
 package com.dtacomp.api.schema.classes;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,7 +36,7 @@ import lombok.NoArgsConstructor;
 @Builder 
 @NoArgsConstructor 
 @AllArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails {
     
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,6 +62,27 @@ public class Usuario {
     
     @Column(name="id_externo")
     private String idExterno;
+
+    // -- UserDetails --
+
+    @Override
+    @jakarta.persistence.Transient
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + perfil.name()));
+    }
+
+    @Override
+    @JsonIgnore
+    @jakarta.persistence.Transient
+    public String getPassword() {
+        return senhaHash;
+    }
+
+    @Override
+    @jakarta.persistence.Transient
+    public String getUsername() {
+        return email;
+    }
     
     public enum TipoPerfil {
         MEMBRO(0, "membro"),
