@@ -2,6 +2,7 @@ package com.dtacomp.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -46,22 +47,38 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/hello").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+<<<<<<< Updated upstream
                 
                 // Conteúdos - Leitura pública / Apenas autenticados para escrita
+=======
+
+                // Conteúdos - Leitura pública / Escrita para membros, revisores e admins
+>>>>>>> Stashed changes
                 .requestMatchers(HttpMethod.GET, "/conteudos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/conteudos/**").hasAnyRole("MEMBRO", "REVISOR", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
 
+<<<<<<< Updated upstream
                 // Revisões - Apenas revisor e admin
                 .requestMatchers("/revisoes/**").hasAnyRole("REVISOR", "ADMIN")
 
                 // Usuários e Instituições - Gestão administrativa
+=======
+                // Revisões - Apenas revisores e admins
+                .requestMatchers("/revisoes/**").hasAnyRole("REVISOR", "ADMIN")
+
+                // Gestão de Usuários e Instituições - Apenas admins
+>>>>>>> Stashed changes
                 .requestMatchers("/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/instituicoes/**").authenticated()
                 .requestMatchers("/instituicoes/**").hasRole("ADMIN")
 
+<<<<<<< Updated upstream
                 // Tags - Leitura autenticada, gestão ADMIN
+=======
+                // Tags - Leitura autenticada, gestão para admin
+>>>>>>> Stashed changes
                 .requestMatchers(HttpMethod.GET, "/tags/**").authenticated()
                 .requestMatchers("/tags/**").hasRole("ADMIN")
 

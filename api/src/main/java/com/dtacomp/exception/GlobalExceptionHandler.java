@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,8 +36,13 @@ public class GlobalExceptionHandler {
         ));
     }
 
+<<<<<<< Updated upstream
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+=======
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+>>>>>>> Stashed changes
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 "Acesso negado",
