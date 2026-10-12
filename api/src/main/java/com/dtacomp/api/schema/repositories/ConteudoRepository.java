@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.dtacomp.api.schema.classes.Conteudo;
 
-public interface ConteudoRepository extends JpaRepository<Conteudo, UUID> {
+public interface ConteudoRepository 
+    extends JpaRepository<Conteudo, UUID>, JpaSpecificationExecutor<Conteudo> {
     List<Conteudo> findByStatus(Conteudo.StatusConteudo status);
     List<Conteudo> findByTipo(Conteudo.TipoConteudo tipo);
     List<Conteudo> findByTituloContainingIgnoreCase(String titulo);

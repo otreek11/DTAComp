@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.dtacomp.api.schema.classes.Conteudo;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.repositories.UsuarioConteudoRepository;
 import com.dtacomp.api.schema.repositories.UsuarioRepository;
@@ -52,5 +53,22 @@ public class SecurityService {
         return usuarioConteudoRepository.findByConteudo_IdOrderByIdxPosicaoAsc(idConteudo)
                 .stream()
                 .anyMatch(uc -> uc.getUsuario().getId().equals(usuario.getId()));
+    }
+
+    public boolean isAutorRevisorOuAdmin(UUID idConteudo) {
+        Usuario usuario = getUsuarioAutenticado();
+        if (usuario == null) {
+            return false;
+        }
+        if (usuario.getPerfil() == Usuario.TipoPerfil.REVISOR
+                || usuario.getPerfil() == Usuario.TipoPerfil.ADMIN) {
+            return true;
+        }
+        return isAutorDoConteudo(idConteudo);
+    }
+
+    public boolean podeVisualizarConteudo(Conteudo conteudo) {
+        return conteudo.getStatus() == Conteudo.StatusConteudo.PUBLICADO
+                || isAutorRevisorOuAdmin(conteudo.getId());
     }
 }
