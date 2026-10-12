@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,6 +93,25 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(
                 token,
+                usuario.getEmail(),
+                usuario.getPerfil().getDescricao(),
+                usuario.getId()
+        ));
+    }
+
+<<<<<<< Updated upstream
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public ResponseEntity<AuthResponse> me(org.springframework.security.core.annotation.AuthenticationPrincipal Usuario usuario) {
+=======
+    @GetMapping("/me")
+    public ResponseEntity<AuthResponse> me(@AuthenticationPrincipal Usuario usuario) {
+>>>>>>> Stashed changes
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(new AuthResponse(
+                null,
                 usuario.getEmail(),
                 usuario.getPerfil().getDescricao(),
                 usuario.getId()
