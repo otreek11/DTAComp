@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.dtacomp.dto.error.ErrorResponse;
 
@@ -51,6 +52,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "Recurso não encontrado",
+                ex.getMessage(),
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler({RequisicaoInvalidaException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErrorResponse> handleRequisicaoInvalida(Exception ex) {
+        String message = ex instanceof RequisicaoInvalidaException
+                ? ex.getMessage() : "Parâmetro ou parte da requisição inválido";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Requisição inválida",
+                message,
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(ConflitoException.class)
+    public ResponseEntity<ErrorResponse> handleConflito(ConflitoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflito",
                 ex.getMessage(),
                 Instant.now().toString()
         ));
