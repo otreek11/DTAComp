@@ -96,4 +96,18 @@ public class AuthController {
                 usuario.getId()
         ));
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public ResponseEntity<AuthResponse> me(org.springframework.security.core.annotation.AuthenticationPrincipal Usuario usuario) {
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(new AuthResponse(
+                null,
+                usuario.getEmail(),
+                usuario.getPerfil().getDescricao(),
+                usuario.getId()
+        ));
+    }
 }
