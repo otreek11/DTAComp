@@ -36,13 +36,8 @@ public class GlobalExceptionHandler {
         ));
     }
 
-<<<<<<< Updated upstream
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
-=======
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
->>>>>>> Stashed changes
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 "Acesso negado",

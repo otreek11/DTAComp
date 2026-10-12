@@ -99,13 +99,8 @@ public class AuthController {
         ));
     }
 
-<<<<<<< Updated upstream
-    @org.springframework.web.bind.annotation.GetMapping("/me")
-    public ResponseEntity<AuthResponse> me(org.springframework.security.core.annotation.AuthenticationPrincipal Usuario usuario) {
-=======
     @GetMapping("/me")
     public ResponseEntity<AuthResponse> me(@AuthenticationPrincipal Usuario usuario) {
->>>>>>> Stashed changes
         if (usuario == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
