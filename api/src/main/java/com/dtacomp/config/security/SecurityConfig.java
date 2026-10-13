@@ -49,6 +49,7 @@ public class SecurityConfig {
 
                 // Conteúdos - Leitura pública / Escrita para membros, revisores e admins
                 .requestMatchers(HttpMethod.GET, "/conteudos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/arquivos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/conteudos/**").hasAnyRole("MEMBRO", "REVISOR", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
@@ -59,6 +60,7 @@ public class SecurityConfig {
                 // Tags - Leitura autenticada, gestão para admin
                 .requestMatchers(HttpMethod.GET, "/tags/**").authenticated()
                 .requestMatchers("/tags/**").hasRole("ADMIN")
+
 
                 .anyRequest().authenticated()
             )
