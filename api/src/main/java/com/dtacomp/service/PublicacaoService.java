@@ -335,7 +335,7 @@ public class PublicacaoService {
             if (limpo.isEmpty()) {
                 throw new RequisicaoInvalidaException("Tag não pode ser vazia");
             }
-            tagRepository.findByNome(limpo).ifPresentOrElse(tags::add, () -> ausentes.add(limpo));
+            tagRepository.findByNomeIgnoreCase(limpo).ifPresentOrElse(tags::add, () -> ausentes.add(limpo));
         }
         if (!ausentes.isEmpty()) {
             throw new RequisicaoInvalidaException("Tags inexistentes: " + String.join(", ", ausentes));

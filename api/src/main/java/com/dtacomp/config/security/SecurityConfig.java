@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/usuarios/*/perfil").permitAll()
 
                 // Tags - Leitura autenticada, gestão para admin
-                .requestMatchers(HttpMethod.GET, "/tags/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/tags/**").permitAll()
                 .requestMatchers("/tags/**").hasRole("ADMIN")
 
 
