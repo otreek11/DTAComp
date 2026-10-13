@@ -83,6 +83,25 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
+    @Transactional
+    public void anonimizar(UUID id) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome("Usuário removido");
+        usuario.setEmail("removido-" + id + "@anonimo.invalid");
+        usuario.setSenhaHash(UUID.randomUUID().toString());
+        usuario.setIdExterno(null);
+        usuario.setPerfil(Usuario.TipoPerfil.MEMBRO);
+        repository.save(usuario);
+    }
+
+    @Transactional
+    public void alterarPerfil(UUID id, Usuario.TipoPerfil perfil) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setPerfil(perfil);
+        repository.save(usuario);
+    }
+
+
     public long contarPorPerfil(Usuario.TipoPerfil perfil) {
         return repository.countByPerfil(perfil);
     }

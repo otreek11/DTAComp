@@ -2,6 +2,7 @@ package com.dtacomp.exception;
 
 import java.time.Instant;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "Requisição inválida",
                 "Requisição malformada: corpo ausente ou inválido, ou parâmetro com formato incorreto",
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegridade(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflito",
+                "A operação viola uma restrição de integridade dos dados",
                 Instant.now().toString()
         ));
     }

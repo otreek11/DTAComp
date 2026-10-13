@@ -35,6 +35,7 @@ import com.dtacomp.api.schema.classes.Conteudo.TipoConteudo;
 import com.dtacomp.api.schema.classes.ConteudoPDF;
 import com.dtacomp.api.schema.classes.ConteudoTexto;
 import com.dtacomp.api.schema.classes.Imagem;
+import com.dtacomp.api.schema.classes.Revisao;
 import com.dtacomp.api.schema.classes.Tag;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.classes.UsuarioConteudo;
@@ -257,7 +258,7 @@ public class PublicacaoService {
         conteudo.setTitulo(titulo.trim());
         conteudo.setResumo(limparResumo(resumo));
         conteudo.setTags(tags);
-        conteudo.setStatus(StatusConteudo.REVISAO);   // a data de submissão original é mantida
+        conteudo.setStatus(StatusConteudo.REVISAO);
         conteudoService.salvar(conteudo);
     }
 
@@ -334,7 +335,7 @@ public class PublicacaoService {
             if (limpo.isEmpty()) {
                 throw new RequisicaoInvalidaException("Tag não pode ser vazia");
             }
-            tagRepository.findByNome(limpo).ifPresentOrElse(tags::add, () -> ausentes.add(limpo));
+            tagRepository.findByNomeIgnoreCase(limpo).ifPresentOrElse(tags::add, () -> ausentes.add(limpo));
         }
         if (!ausentes.isEmpty()) {
             throw new RequisicaoInvalidaException("Tags inexistentes: " + String.join(", ", ausentes));
@@ -342,7 +343,6 @@ public class PublicacaoService {
         return tags;
     }
 
-    /** Sem isso, um membro injeta script que roda no navegador de quem lê. */
     private String sanitizarHtml(String html) {
         String limpo = POLITICA_HTML.sanitize(html);
         if (limpo == null || limpo.isBlank()) {
@@ -396,7 +396,6 @@ public class PublicacaoService {
         }
     }
 
-    /** Grava o PDF e garante a remoção do arquivo se a transação falhar. */
     private String gravarPDF(MultipartFile arquivo) {
         String chave;
         try (InputStream in = arquivo.getInputStream()) {
@@ -408,7 +407,6 @@ public class PublicacaoService {
         return chave;
     }
 
-    /** Remove do armazenamento as imagens que deixaram de ser usadas por qualquer conteúdo. */
     private void removerImagensOrfasAposCommit(Set<String> chavesCandidatas) {
         List<String> orfas = chavesCandidatas.stream()
                 .filter(chave -> !imagemRepository.existsByUrlImage(chave))
@@ -448,13 +446,33 @@ public class PublicacaoService {
         }
     }
 
-    /** Limpeza de arquivo nunca deve transformar uma operação já confirmada em erro. */
     private void executarSemFalhar(Runnable acao) {
         try {
             acao.run();
         } catch (RuntimeException e) {
             log.warn("Falha ao limpar arquivo do armazenamento", e);
         }
+    }
+
+    public void despublicar(UUID id, Usuario admin, String motivo) {
+        Conteudo conteudo = conteudoService.buscarPorId(id);
+        
+        if (conteudo.getStatus() != StatusConteudo.PUBLICADO) {
+            throw new ConflitoException("Apenas conteúdos publicados podem ser despublicados");
+        }
+
+        conteudo.setStatus(StatusConteudo.DEVOLVIDO);
+        conteudoService.salvar(conteudo);
+
+        Revisao revisao = Revisao.builder()
+                .conteudo(conteudo)
+                .revisor(admin)
+                .status(StatusConteudo.DEVOLVIDO)
+                .parecerHumano(motivo)
+                .dataRevisao(LocalDate.now())
+                .build();
+        
+        revisaoRepository.save(revisao);
     }
 
     private record ImagemValidada(String chave, String legenda) {}
