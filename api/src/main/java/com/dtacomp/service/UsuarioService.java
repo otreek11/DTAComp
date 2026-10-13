@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dtacomp.api.schema.classes.Instituicao;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.repositories.UsuarioRepository;
 
@@ -54,6 +55,36 @@ public class UsuarioService {
         usuario.setIdExterno(dados.getIdExterno());
 
         return repository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario atualizarPerfil(UUID id, String nome, Instituicao instituicao) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome(nome);
+        usuario.setInstituicao(instituicao);
+        return repository.save(usuario);
+    }
+
+    @Transactional
+    public void alterarSenha(UUID id, String novoSenhaHash) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setSenhaHash(novoSenhaHash);
+        repository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario anonimizar(UUID id, String nomeAnonimo, String emailAnonimo, String senhaHashAleatoria) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome(nomeAnonimo);
+        usuario.setEmail(emailAnonimo);
+        usuario.setSenhaHash(senhaHashAleatoria);
+        usuario.setIdExterno(null);
+        usuario.setPerfil(Usuario.TipoPerfil.MEMBRO);
+        return repository.save(usuario);
+    }
+
+    public long contarPorPerfil(Usuario.TipoPerfil perfil) {
+        return repository.countByPerfil(perfil);
     }
 
     @Transactional

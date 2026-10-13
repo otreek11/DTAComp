@@ -53,6 +53,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/conteudos/**").hasAnyRole("MEMBRO", "ADMIN")
 
+                // Usuários - perfil público de autor; /usuarios/me/** cai no anyRequest().authenticated()
+                .requestMatchers(HttpMethod.GET, "/usuarios/*/perfil").permitAll()
+
                 // Tags - Leitura autenticada, gestão para admin
                 .requestMatchers(HttpMethod.GET, "/tags/**").authenticated()
                 .requestMatchers("/tags/**").hasRole("ADMIN")

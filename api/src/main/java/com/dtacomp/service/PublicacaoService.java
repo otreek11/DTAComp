@@ -61,12 +61,10 @@ public class PublicacaoService {
     static final String PASTA_PDF = "pdf";
     private static final byte[] ASSINATURA_PDF = "%PDF-".getBytes(StandardCharsets.US_ASCII);
 
-    /** /arquivos/imagens/<uuid>.<ext> — o grupo 1 é a chave de armazenamento. */
     private static final Pattern URL_IMAGEM = Pattern.compile(
             "^/arquivos/(imagens/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
             + "\\.(?:png|jpg|jpeg|webp))$");
 
-    /** HTML de rich-text: formatação, blocos, links, imagens e tabelas; sem script, estilo inline ou eventos. */
     private static final PolicyFactory POLITICA_HTML = Sanitizers.FORMATTING
             .and(Sanitizers.BLOCKS)
             .and(Sanitizers.LINKS)
@@ -87,7 +85,7 @@ public class PublicacaoService {
     private final RevisaoRepository revisaoRepository;
     private final ImagemRepository imagemRepository;
     private final ArmazenamentoService armazenamento;
-    private final long tamanhoMaximoPdf;
+    private final long tamanhoMaximoPDF;
 
     public PublicacaoService(ConteudoService conteudoService,
                              ConteudoTextoService conteudoTextoService,
@@ -100,7 +98,7 @@ public class PublicacaoService {
                              RevisaoRepository revisaoRepository,
                              ImagemRepository imagemRepository,
                              ArmazenamentoService armazenamento,
-                             @Value("${app.storage.max-pdf-bytes:20971520}") long tamanhoMaximoPdf) {
+                             @Value("${app.storage.max-pdf-bytes:20971520}") long tamanhoMaximoPDF) {
         this.conteudoService = conteudoService;
         this.conteudoTextoService = conteudoTextoService;
         this.conteudoPDFService = conteudoPDFService;
@@ -112,7 +110,7 @@ public class PublicacaoService {
         this.revisaoRepository = revisaoRepository;
         this.imagemRepository = imagemRepository;
         this.armazenamento = armazenamento;
-        this.tamanhoMaximoPdf = tamanhoMaximoPdf;
+        this.tamanhoMaximoPDF = tamanhoMaximoPDF;
     }
 
     public Conteudo submeterTexto(Usuario submissor, ConteudoTextoRequest req) {
@@ -138,10 +136,10 @@ public class PublicacaoService {
         return conteudo;
     }
 
-    public Conteudo submeterPdf(Usuario submissor, ConteudoPDFRequest req, MultipartFile arquivo) {
+    public Conteudo submeterPDF(Usuario submissor, ConteudoPDFRequest req, MultipartFile arquivo) {
         List<Usuario> autores = resolverAutores(req.autores(), submissor);
         Set<Tag> tags = resolverTags(req.tags());
-        validarPdf(arquivo);
+        validarPDF(arquivo);
 
         Conteudo conteudo = conteudoService.salvar(Conteudo.builder()
                 .titulo(req.titulo().trim())
@@ -152,7 +150,7 @@ public class PublicacaoService {
                 .tags(tags)
                 .build());
 
-        String chave = gravarPdf(arquivo);
+        String chave = gravarPDF(arquivo);
         conteudoPDFService.salvar(ConteudoPDF.builder()
                 .conteudo(conteudo)
                 .urlArquivo(chave)
@@ -189,7 +187,7 @@ public class PublicacaoService {
         return conteudo;
     }
 
-    public Conteudo reenviarPdf(UUID id, Usuario submissor, ConteudoPDFRequest req, MultipartFile arquivo) {
+    public Conteudo reenviarPDF(UUID id, Usuario submissor, ConteudoPDFRequest req, MultipartFile arquivo) {
         Conteudo conteudo = conteudoService.buscarPorId(id);
         exigirDevolvido(conteudo, TipoConteudo.PDF);
 
@@ -198,11 +196,11 @@ public class PublicacaoService {
 
         boolean substituirArquivo = arquivo != null && !arquivo.isEmpty();
         if (substituirArquivo) {
-            validarPdf(arquivo);
+            validarPDF(arquivo);
             ConteudoPDF pdf = conteudoPDFService.buscarPorId(id);
             String chaveAntiga = pdf.getUrlArquivo();
 
-            String chaveNova = gravarPdf(arquivo);
+            String chaveNova = gravarPDF(arquivo);
             pdf.setUrlArquivo(chaveNova);
             pdf.setTamanhoBytes(arquivo.getSize());
             conteudoPDFService.salvar(pdf);
@@ -222,7 +220,7 @@ public class PublicacaoService {
             throw new ConflitoException("Conteúdo publicado só pode ser removido por um administrador");
         }
 
-        String chavePdf = null;
+        String chavePDF = null;
         Set<String> chavesImagens = new HashSet<>();
         if (conteudo.getTipo() == TipoConteudo.TEXTO) {
             imagemRepository.findByConteudoTexto_IdConteudo(id)
@@ -231,16 +229,16 @@ public class PublicacaoService {
             imagemRepository.flush();
             conteudoTextoService.remover(id);
         } else {
-            chavePdf = conteudoPDFService.buscarPorId(id).getUrlArquivo();
+            chavePDF = conteudoPDFService.buscarPorId(id).getUrlArquivo();
             conteudoPDFService.remover(id);
         }
         usuarioConteudoRepository.deleteByConteudo_Id(id);
         revisaoRepository.deleteByConteudo_Id(id);
         conteudoService.remover(id);
 
-        final String chavePdfFinal = chavePdf;
-        if (chavePdfFinal != null) {
-            aposCommit(() -> armazenamento.remover(chavePdfFinal));
+        final String chavePDFFinal = chavePDF;
+        if (chavePDFFinal != null) {
+            aposCommit(() -> armazenamento.remover(chavePDFFinal));
         }
         removerImagensOrfasAposCommit(chavesImagens);
     }
@@ -377,13 +375,13 @@ public class PublicacaoService {
         return validadas;
     }
 
-    private void validarPdf(MultipartFile arquivo) {
+    private void validarPDF(MultipartFile arquivo) {
         if (arquivo == null || arquivo.isEmpty()) {
             throw new RequisicaoInvalidaException("O arquivo PDF é obrigatório");
         }
-        if (arquivo.getSize() > tamanhoMaximoPdf) {
+        if (arquivo.getSize() > tamanhoMaximoPDF) {
             throw new RequisicaoInvalidaException("O PDF excede o tamanho máximo de "
-                    + (tamanhoMaximoPdf / (1024 * 1024)) + " MB");
+                    + (tamanhoMaximoPDF / (1024 * 1024)) + " MB");
         }
         if (!"application/pdf".equalsIgnoreCase(arquivo.getContentType())) {
             throw new RequisicaoInvalidaException("O arquivo deve ser um PDF (application/pdf)");
@@ -399,7 +397,7 @@ public class PublicacaoService {
     }
 
     /** Grava o PDF e garante a remoção do arquivo se a transação falhar. */
-    private String gravarPdf(MultipartFile arquivo) {
+    private String gravarPDF(MultipartFile arquivo) {
         String chave;
         try (InputStream in = arquivo.getInputStream()) {
             chave = armazenamento.salvar(PASTA_PDF, "pdf", in);

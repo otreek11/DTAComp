@@ -3,6 +3,7 @@ package com.dtacomp.exception;
 import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -90,6 +91,36 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "Erro de validação",
                 message,
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(ConflitoException.class)
+    public ResponseEntity<ErrorResponse> handleConflito(ConflitoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Conflito",
+                ex.getMessage(),
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(RequisicaoInvalidaException.class)
+    public ResponseEntity<ErrorResponse> handleRequisicaoInvalida(RequisicaoInvalidaException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Requisição inválida",
+                ex.getMessage(),
+                Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErrorResponse> handleRequisicaoMalformada(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Requisição inválida",
+                "Requisição malformada: corpo ausente ou inválido, ou parâmetro com formato incorreto",
                 Instant.now().toString()
         ));
     }
