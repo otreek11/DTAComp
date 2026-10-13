@@ -1,8 +1,12 @@
 package com.dtacomp.api.schema.classes;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,4 +50,8 @@ public class Revisao {
 
     @Column(name="parecer_humano")
     private String parecerHumano;
+
+    @Column(name="data_revisao")
+    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
+    private LocalDate dataRevisao;
 }
