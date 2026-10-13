@@ -280,7 +280,7 @@ class ConteudoControllerTest {
 
     @Test
     void criarPdf_ok_retorna201() throws Exception {
-        when(publicacaoService.submeterPdf(any(), any(), any())).thenReturn(conteudoCriado());
+        when(publicacaoService.submeterPDF(any(), any(), any())).thenReturn(conteudoCriado());
 
         mockMvc.perform(multipart("/conteudos/pdf").file(parteDados(pdfValido())).file(parteArquivo())
                         .with(como(TipoPerfil.MEMBRO)))
@@ -293,7 +293,7 @@ class ConteudoControllerTest {
         mockMvc.perform(multipart("/conteudos/pdf").file(parteArquivo()).with(como(TipoPerfil.MEMBRO)))
                 .andExpect(status().isBadRequest());
 
-        verify(publicacaoService, never()).submeterPdf(any(), any(), any());
+        verify(publicacaoService, never()).submeterPDF(any(), any(), any());
     }
 
     @Test
@@ -357,7 +357,7 @@ class ConteudoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id.toString()));
 
-        verify(publicacaoService).reenviarPdf(eq(id), any(Usuario.class), any(), any());
+        verify(publicacaoService).reenviarPDF(eq(id), any(Usuario.class), any(), any());
     }
 
     @Test

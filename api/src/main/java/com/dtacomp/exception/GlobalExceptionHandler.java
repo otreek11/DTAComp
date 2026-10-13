@@ -9,6 +9,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -58,28 +60,6 @@ public class GlobalExceptionHandler {
         ));
     }
 
-    @ExceptionHandler({RequisicaoInvalidaException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ErrorResponse> handleRequisicaoInvalida(Exception ex) {
-        String message = ex instanceof RequisicaoInvalidaException
-                ? ex.getMessage() : "Parâmetro ou parte da requisição inválido";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Requisição inválida",
-                message,
-                Instant.now().toString()
-        ));
-    }
-
-    @ExceptionHandler(ConflitoException.class)
-    public ResponseEntity<ErrorResponse> handleConflito(ConflitoException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                "Conflito",
-                ex.getMessage(),
-                Instant.now().toString()
-        ));
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
@@ -115,7 +95,8 @@ public class GlobalExceptionHandler {
         ));
     }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class, MissingServletRequestPartException.class})
     public ResponseEntity<ErrorResponse> handleRequisicaoMalformada(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
