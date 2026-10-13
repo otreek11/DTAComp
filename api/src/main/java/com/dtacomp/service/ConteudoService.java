@@ -3,11 +3,15 @@ package com.dtacomp.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dtacomp.api.schema.classes.Conteudo;
 import com.dtacomp.api.schema.repositories.ConteudoRepository;
+import com.dtacomp.api.schema.specifications.ConteudoSpecifications;
 
 @Service
 @Transactional(readOnly = true)
@@ -68,5 +72,22 @@ public class ConteudoService {
 
     public List<Conteudo> buscarPorTag(String nomeTag) {
         return repository.findByTagNome(nomeTag);
+    }
+
+    public Page<Conteudo> pesquisar(ConteudoFiltro filtro, Pageable pageable) {
+        Specification<Conteudo> spec = ConteudoSpecifications.comStatus(filtro.status())
+                .and(ConteudoSpecifications.comTipo(filtro.tipo()))
+                .and(ConteudoSpecifications.textoLivre(filtro.q()))
+                .and(ConteudoSpecifications.tituloContem(filtro.titulo()))
+                .and(ConteudoSpecifications.resumoContem(filtro.resumo()))
+                .and(ConteudoSpecifications.comAlgumaTag(filtro.tags()))
+                .and(ConteudoSpecifications.autorNomeContem(filtro.autor()))
+                .and(ConteudoSpecifications.comAutor(filtro.idAutor()))
+                .and(ConteudoSpecifications.semAutor(filtro.excluirIdAutor()))
+                .and(ConteudoSpecifications.comAutorDaInstituicao(filtro.idInstituicao()))
+                .and(ConteudoSpecifications.dataDe(filtro.de()))
+                .and(ConteudoSpecifications.dataAte(filtro.ate()));
+
+        return repository.findAll(spec, pageable);
     }
 }

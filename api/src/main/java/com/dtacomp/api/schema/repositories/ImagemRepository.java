@@ -9,4 +9,8 @@ import com.dtacomp.api.schema.classes.Imagem;
 
 public interface ImagemRepository extends JpaRepository<Imagem, UUID> {
     List<Imagem> findByConteudoTexto_IdConteudo(UUID idConteudoTexto);
+
+    void deleteByConteudoTexto_IdConteudo(UUID id);
+
+    boolean existsByUrlImage(String chave);
 }

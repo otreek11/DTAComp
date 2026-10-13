@@ -1,5 +1,6 @@
 package com.dtacomp.api.schema.repositories;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,12 @@ public interface UsuarioConteudoRepository extends JpaRepository<UsuarioConteudo
     // autores de uma publicacao, em ordem de autoria
     List<UsuarioConteudo> findByConteudo_IdOrderByIdxPosicaoAsc(UUID idConteudo);
 
+    // autores de varios conteudos de uma vez (evita N+1 em listagens)
+    List<UsuarioConteudo> findByConteudo_IdInOrderByIdxPosicaoAsc(Collection<UUID> idsConteudo);
+
     // publicacoes de um autor
     @Query("SELECT uc.conteudo FROM UsuarioConteudo uc WHERE uc.usuario.id = :idUsuario")
     List<Conteudo> findConteudosPorAutor(@Param("idUsuario") UUID idUsuario);
+
+    void deleteByConteudo_Id(UUID id);
 }

@@ -1,5 +1,6 @@
 package com.dtacomp.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +37,13 @@ public class UsuarioConteudoService {
 
     public List<Conteudo> buscarConteudosPorAutor(UUID idUsuario) {
         return repository.findConteudosPorAutor(idUsuario);
+    }
+
+    public List<UsuarioConteudo> buscarAutoresDeConteudos(Collection<UUID> idsConteudo) {
+        if (idsConteudo == null || idsConteudo.isEmpty()) {
+            return List.of();
+        }
+        return repository.findByConteudo_IdInOrderByIdxPosicaoAsc(idsConteudo);
     }
 
     @Transactional

@@ -141,7 +141,7 @@ class ConteudoServiceTest {
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> service.remover(id));
-        verify(repository, never()).delete(any());
+        verify(repository, never()).delete(any(Conteudo.class));
     }
 
     @Test

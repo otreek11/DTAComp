@@ -12,4 +12,5 @@ public interface RevisaoRepository extends JpaRepository<Revisao, UUID> {
     List<Revisao> findByRevisor_Id(UUID idRevisor);
     List<Revisao> findByConteudo_Id(UUID idConteudo);
     List<Revisao> findByRevisor_IdAndStatus(UUID idRevisor, Conteudo.StatusConteudo status);
+    void deleteByConteudo_Id(UUID id);
 }
