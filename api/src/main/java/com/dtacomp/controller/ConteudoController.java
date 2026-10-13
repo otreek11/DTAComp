@@ -117,12 +117,12 @@ public class ConteudoController {
     }
 
     @PostMapping(path = "/pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ConteudoDetalheResponse> criarPdf(
+    public ResponseEntity<ConteudoDetalheResponse> criarPDF(
             @AuthenticationPrincipal Usuario usuario,
             @RequestPart(value = "dados", required = false) @Valid ConteudoPDFRequest dados,
             @RequestPart(value = "arquivo", required = false) MultipartFile arquivo) {
 
-        Conteudo conteudo = publicacaoService.submeterPdf(usuario, exigirDados(dados), arquivo);
+        Conteudo conteudo = publicacaoService.submeterPDF(usuario, exigirDados(dados), arquivo);
         return criado(conteudo);
     }
 
@@ -145,7 +145,7 @@ public class ConteudoController {
             @RequestPart(value = "dados", required = false) @Valid ConteudoPDFRequest dados,
             @RequestPart(value = "arquivo", required = false) MultipartFile arquivo) {
 
-        publicacaoService.reenviarPdf(id, usuario, exigirDados(dados), arquivo);
+        publicacaoService.reenviarPDF(id, usuario, exigirDados(dados), arquivo);
         return consultaService.detalhar(id);
     }
 
