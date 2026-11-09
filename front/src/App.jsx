@@ -1,122 +1,120 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import { SignUpPage } from "./components/signup/index.js";
+import { LoginPage } from "./components/login/index.js";
+import { NavProvider } from "./nav/NavProvider.jsx";
+import "./styles/dta.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentRoute, setCurrentRoute] = useState(() => {
+    if (typeof window !== "undefined" && window.location.pathname === "/login") {
+      return "/login";
+    }
+    return "/cadastro";
+  });
+
+  const [usuarioLogado, setUsuarioLogado] = useState(null);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(window.location.pathname);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  function navigateTo(path) {
+    if (typeof window !== "undefined" && window.history?.pushState) {
+      window.history.pushState({}, "", path);
+    }
+    setCurrentRoute(path);
+  }
+
+  const customLink = ({ href, onClick, children, ...rest }) => (
+    <a
+      href={href}
+      onClick={(e) => {
+        if (onClick) onClick(e);
+        if (!e.defaultPrevented && href && href.startsWith("/")) {
+          e.preventDefault();
+          navigateTo(href);
+        }
+      }}
+      {...rest}
+    >
+      {children}
+    </a>
+  );
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <NavProvider link={customLink} pathname={currentRoute}>
+      {currentRoute === "/cadastro" && (
+        <SignUpPage
+          onNavigateToLogin={() => navigateTo("/login")}
+          onSuccess={() => navigateTo("/dashboard")}
+        />
+      )}
+
+      {currentRoute === "/login" && (
+        <LoginPage
+          onNavigateToSignUp={() => navigateTo("/cadastro")}
+          onSuccess={(user) => {
+            setUsuarioLogado(user);
+            navigateTo("/dashboard");
+          }}
+        />
+      )}
+
+      {currentRoute === "/dashboard" && (
+        <div
+          className="dta"
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 16,
+            padding: 24,
+            textAlign: "center",
+          }}
         >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <div className="dta-kicker">PAINEL DO MEMBRO</div>
+          <h2 className="dta-serif" style={{ fontSize: 32, margin: 0 }}>
+            Bem-vindo(a) ao DTA · UFMA!
+          </h2>
+          {usuarioLogado && (
+            <p style={{ margin: 0, color: "var(--dta-muted)" }}>
+              Autenticado como: <strong>{usuarioLogado.email}</strong> ({usuarioLogado.perfil})
+            </p>
+          )}
+          <p style={{ maxWidth: 520, lineHeight: 1.55, margin: 0, color: "var(--dta-ink-soft)" }}>
+            Você já tem acesso à submissão de trabalhos acadêmicos, visualização de revisões e divulgação de pesquisas.
+          </p>
+          <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+            <button
+              type="button"
+              className="dta-btn"
+              onClick={() => {
+                localStorage.removeItem("dtacomp_token");
+                localStorage.removeItem("dtacomp_user");
+                setUsuarioLogado(null);
+                navigateTo("/login");
+              }}
+            >
+              Sair da conta
+            </button>
+            <button
+              type="button"
+              className="dta-btn dta-btn--primary"
+              onClick={() => navigateTo("/cadastro")}
+            >
+              Ir para Cadastro
+            </button>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      )}
+    </NavProvider>
+  );
 }
 
-export default App
+export default App;

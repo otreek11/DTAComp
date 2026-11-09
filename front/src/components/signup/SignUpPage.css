@@ -1,0 +1,45 @@
+.dta-auth-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.dta-auth-hero {
+  flex: 1;
+  background-color: var(--dta-teal, #0b5560);
+  color: #ffffff;
+  padding: 64px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dta-auth-hero-body {
+  margin: auto 0;
+  max-width: 520px;
+}
+
+.dta-auth-form-panel {
+  flex: 1.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background-color: var(--dta-paper, #ffffff);
+}
+
+@media (max-width: 900px) {
+  .dta-auth-layout {
+    flex-direction: column;
+  }
+  .dta-auth-hero {
+    padding: 36px 24px;
+    gap: 32px;
+  }
+  .dta-auth-hero-body {
+    margin: 0;
+  }
+  .dta-auth-form-panel {
+    padding: 36px 20px;
+  }
+}
