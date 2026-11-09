@@ -3,6 +3,7 @@ import "../styles/dta.css";
 export * from "./base/index.js";
 export * from "./home/index.js";
 export * from "./signup/index.js";
+export * from "./login/index.js";
 export * from "./publish/index.js";
 export * from "./review/index.js";
 export * from "./article/index.js";

@@ -1,6 +1,7 @@
 package com.dtacomp.controller;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import com.dtacomp.dto.auth.AuthResponse;
 import com.dtacomp.dto.auth.LoginRequest;
 import com.dtacomp.dto.auth.RegisterRequest;
 import com.dtacomp.dto.error.ErrorResponse;
+import com.dtacomp.dto.usuario.UsuarioResponse;
 import com.dtacomp.service.InstituicaoService;
 import com.dtacomp.service.UsuarioService;
 
@@ -111,5 +113,13 @@ public class AuthController {
                 usuario.getPerfil().getDescricao(),
                 usuario.getId()
         ));
+    }
+
+    @GetMapping("/instituicoes")
+    public ResponseEntity<List<UsuarioResponse.InstituicaoInfo>> listarInstituicoes() {
+        List<UsuarioResponse.InstituicaoInfo> instituicoes = instituicaoService.listarTodos().stream()
+                .map(UsuarioResponse.InstituicaoInfo::from)
+                .toList();
+        return ResponseEntity.ok(instituicoes);
     }
 }
