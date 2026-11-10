@@ -6,11 +6,15 @@
 .dta-explorar__featured{color:inherit;text-decoration:none;display:block}
 .dta-explorar__featured:hover h2{text-decoration:underline}
 .dta-explorar__recent{padding-top:2px}
+.dta-explorar__recent a:hover .dta-serif{color:var(--dta-teal);text-decoration:underline}
+.dta-explorar header nav a{transition:color .2s ease}
+.dta-explorar header nav a:hover{color:var(--dta-teal)!important;text-decoration:underline!important}
 
 .dta-explorar__head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-bottom:20px}
 .dta-explorar__head h2{margin:0;font-size:32px;line-height:1.2}
 .dta-explorar__sort{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--dta-ink-soft)}
-.dta-explorar__sort select{font:500 14px var(--dta-sans);color:var(--dta-ink);min-height:44px;padding:0 12px;border:1px solid var(--dta-line);border-radius:4px;background:#f2f3f4}
+.dta-explorar__sort select{font:500 14px var(--dta-sans);color:var(--dta-ink);min-height:44px;padding:0 12px;border:1px solid var(--dta-line);border-radius:4px;background:#f2f3f4;cursor:pointer;transition:background-color .2s ease,border-color .2s ease}
+.dta-explorar__sort select:hover{border-color:var(--dta-teal);background:var(--dta-teal-soft)}
 
 .dta-explorar__filters{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
 .dta-explorar__tags .dta-chip{min-height:36px;font-size:13px;padding:0 14px}

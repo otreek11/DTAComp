@@ -13,11 +13,24 @@
 .dta-wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 .dta a{color:var(--dta-teal)}
 .dta :focus-visible{outline:3px solid var(--dta-teal);outline-offset:2px}
-.dta-btn{min-height:44px;padding:0 20px;border-radius:4px;font:600 15px var(--dta-sans);cursor:pointer;border:1px solid var(--dta-ink);background:#fff;color:var(--dta-ink)}
-.dta-btn--primary{background:var(--dta-teal);border-color:var(--dta-teal);color:#fff}
+.dta-btn{min-height:44px;padding:0 20px;border-radius:4px;font:600 15px var(--dta-sans);cursor:pointer;border:1px solid var(--dta-ink);background:transparent;color:var(--dta-ink);position:relative;overflow:hidden;z-index:1;transition:all .3s}
+.dta-btn::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:100%;background-color:#fff;border-radius:inherit;z-index:-2}
+.dta-btn::before{content:'';position:absolute;bottom:0;left:0;width:0%;height:100%;background-color:var(--dta-teal);transition:all .3s;border-radius:inherit;z-index:-1}
+.dta-btn:hover:not(:disabled){color:#fff;border-color:var(--dta-teal)}
+.dta-btn:hover:not(:disabled)::before{width:100%}
+.dta-btn--primary{border-color:var(--dta-teal);color:#fff}
+.dta-btn--primary::after{background-color:var(--dta-teal)}
+.dta-btn--primary::before{background-color:#06333a}
+.dta-btn--primary:hover:not(:disabled){color:#fff;border-color:#06333a}
 .dta-btn--block{width:100%}
-.dta-chip{border:1px solid var(--dta-line);background:#fff;border-radius:999px;padding:0 16px;min-height:44px;white-space:nowrap;font:500 14px var(--dta-sans);color:var(--dta-ink);cursor:pointer}
-.dta-chip[aria-pressed="true"]{background:var(--dta-ink);color:#fff;border-color:var(--dta-ink)}
+.dta-chip{border:1px solid var(--dta-line);background:transparent;border-radius:999px;padding:0 16px;min-height:44px;white-space:nowrap;font:500 14px var(--dta-sans);color:var(--dta-ink);cursor:pointer;position:relative;overflow:hidden;z-index:1;transition:all .3s}
+.dta-chip::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:100%;background-color:#fff;border-radius:inherit;z-index:-2}
+.dta-chip::before{content:'';position:absolute;bottom:0;left:0;width:0%;height:100%;background-color:var(--dta-teal);transition:all .3s;border-radius:inherit;z-index:-1}
+.dta-chip:hover:not(:disabled){color:#fff;border-color:var(--dta-teal)}
+.dta-chip:hover:not(:disabled)::before{width:100%}
+.dta-chip[aria-pressed="true"]{color:#fff;border-color:var(--dta-ink)}
+.dta-chip[aria-pressed="true"]::after{background-color:var(--dta-ink)}
+.dta-chip[aria-pressed="true"]::before{background-color:var(--dta-teal)}
 .dta-field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
 .dta-field input,.dta-field textarea,.dta-field select{font:400 16px var(--dta-sans);padding:12px;border:1px solid #8a8f98;border-radius:4px;min-height:48px;width:100%}
 .dta-field [aria-invalid="true"]{border-color:var(--dta-warn)}
@@ -46,7 +59,10 @@
 @media (prefers-reduced-motion:reduce){.dta *{transition:none!important;animation:none!important}}
 
 /* Botões: variante de perigo e estado desabilitado */
-.dta-btn--danger{background:var(--dta-warn);border-color:var(--dta-warn);color:#fff}
+.dta-btn--danger{border-color:var(--dta-warn);color:#fff}
+.dta-btn--danger::after{background-color:var(--dta-warn)}
+.dta-btn--danger::before{background-color:#58250b}
+.dta-btn--danger:hover:not(:disabled){color:#fff;border-color:#58250b}
 .dta-btn:disabled{opacity:.6;cursor:not-allowed}
 
 /* Modais */
@@ -69,7 +85,10 @@
 .dta-viewer__bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:12px;background:rgba(0,0,0,.5)}
 .dta-viewer__tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .dta-viewer__level{min-width:56px;text-align:center;font-size:14px}
-.dta-viewer .dta-btn{background:#16181c;color:#fff;border-color:#8a8f98}
+.dta-viewer .dta-btn{color:#fff;border-color:#8a8f98}
+.dta-viewer .dta-btn::after{background-color:#16181c}
+.dta-viewer .dta-btn::before{background-color:#2b2f36}
+.dta-viewer .dta-btn:hover:not(:disabled){color:#fff;border-color:#fff}
 .dta-viewer__stage{flex:1;min-height:0;overflow:hidden;touch-action:none;display:flex;align-items:center;justify-content:center;cursor:grab}
 .dta-viewer__stage[data-dragging="true"]{cursor:grabbing}
 .dta-viewer__img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:transform .12s ease-out}
