@@ -75,3 +75,20 @@
 .dta-viewer__img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:transform .12s ease-out}
 .dta-viewer__stage[data-dragging="true"] .dta-viewer__img{transition:none}
 .dta-viewer__caption{margin:0;padding:10px 16px;font-size:14px;text-align:center;background:rgba(0,0,0,.5)}
+
+/* Grade de cards e barra de filtros (Explorar / Início) */
+.dta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:40px 32px}
+.dta-grid__more{text-align:center;margin-top:48px}
+.dta-card p{display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dta-filterbar{display:flex;flex-wrap:wrap;gap:10px}
+@media (max-width:640px){
+  /* Lista compacta: sem capa e sem resumo, como no layout mobile */
+  .dta-grid--compact{grid-template-columns:1fr;gap:28px}
+  .dta-grid--compact .dta-card > :first-child{display:none!important}
+  .dta-grid--compact .dta-card p{display:none}
+  .dta-grid--compact .dta-card h3{font-size:20px}
+  .dta-grid__more{margin-top:32px}
+  .dta-grid__more .dta-btn{width:100%}
+  .dta-filterbar--scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px}
+  .dta-filterbar--scroll::-webkit-scrollbar{display:none}
+}
