@@ -1,12 +1,17 @@
 import { Chip } from "../base/Chip.jsx";
 
-/** options: string[]; active: string; onChange(opt); label: rótulo acessível do grupo. */
-export function FilterBar({ label, options = [], active, onChange }) {
+/**
+ * options: string[] ou [{ value, label }]; active: valor ativo; onChange(valor);
+ * label: rótulo acessível do grupo; className: classes extras (ex.: rolagem horizontal no mobile).
+ */
+export function FilterBar({ label, options = [], active, onChange, className = "" }) {
   return (
-    <div role="group" aria-label={label} style={{ display: "flex", flexWrap: "wrap", gap: 10, overflowX: "auto" }}>
-      {options.map((o) => (
-        <Chip key={o} pressed={active === o} onClick={() => onChange?.(o)}>{o}</Chip>
-      ))}
+    <div role="group" aria-label={label} className={`dta-filterbar ${className}`.trim()}>
+      {options.map((o) => {
+        const value = typeof o === "string" ? o : o.value;
+        const text = typeof o === "string" ? o : o.label;
+        return <Chip key={value} pressed={active === value} onClick={() => onChange?.(value)}>{text}</Chip>;
+      })}
     </div>
   );
 }

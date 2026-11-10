@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
-import { SignUpPage } from "./components/signup/index.js";
-import { LoginPage } from "./components/login/index.js";
+import { LoginPage, SignUpPage, ExplorarPage } from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
 import "./styles/dta.css";
 
+const ROTAS = ["/", "/login", "/cadastro", "/dashboard"];
+
+/** "/explorar" é um apelido de "/"; rotas desconhecidas caem na página Explorar. */
+function normalizarRota(pathname) {
+  const rota = (pathname || "/").replace(/\/+$/, "") || "/";
+  if (rota === "/explorar") return "/";
+  return ROTAS.includes(rota) ? rota : "/";
+}
+
 function App() {
-  const [currentRoute, setCurrentRoute] = useState(() => {
-    if (typeof window !== "undefined" && window.location.pathname === "/login") {
-      return "/login";
-    }
-    return "/cadastro";
-  });
+  const [currentRoute, setCurrentRoute] = useState(() =>
+    normalizarRota(typeof window !== "undefined" ? window.location.pathname : "/")
+  );
 
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentRoute(window.location.pathname);
+      setCurrentRoute(normalizarRota(window.location.pathname));
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -26,7 +31,7 @@ function App() {
     if (typeof window !== "undefined" && window.history?.pushState) {
       window.history.pushState({}, "", path);
     }
-    setCurrentRoute(path);
+    setCurrentRoute(normalizarRota(path));
   }
 
   const customLink = ({ href, onClick, children, ...rest }) => (
@@ -47,6 +52,13 @@ function App() {
 
   return (
     <NavProvider link={customLink} pathname={currentRoute}>
+      {currentRoute === "/" && (
+        <ExplorarPage
+          user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : null}
+          onSignIn={() => navigateTo("/login")}
+        />
+      )}
+
       {currentRoute === "/cadastro" && (
         <SignUpPage
           onNavigateToLogin={() => navigateTo("/login")}
@@ -59,7 +71,7 @@ function App() {
           onNavigateToSignUp={() => navigateTo("/cadastro")}
           onSuccess={(user) => {
             setUsuarioLogado(user);
-            navigateTo("/dashboard");
+            navigateTo("/");
           }}
         />
       )}

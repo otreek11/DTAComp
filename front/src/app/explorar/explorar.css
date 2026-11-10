@@ -1,0 +1,36 @@
+/* Página Explorar — desktop por padrão, mobile em ≤ 640px (mesmo breakpoint de dta.css) */
+.dta-explorar{min-height:100vh;display:flex;flex-direction:column}
+.dta-explorar main{flex:1;width:100%;padding-bottom:80px}
+
+.dta-explorar__top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:32px 48px;align-items:start;margin-bottom:56px}
+.dta-explorar__featured{color:inherit;text-decoration:none;display:block}
+.dta-explorar__featured:hover h2{text-decoration:underline}
+.dta-explorar__recent{padding-top:2px}
+
+.dta-explorar__head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-bottom:20px}
+.dta-explorar__head h2{margin:0;font-size:32px;line-height:1.2}
+.dta-explorar__sort{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--dta-ink-soft)}
+.dta-explorar__sort select{font:500 14px var(--dta-sans);color:var(--dta-ink);min-height:44px;padding:0 12px;border:1px solid var(--dta-line);border-radius:4px;background:#f2f3f4}
+
+.dta-explorar__filters{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.dta-explorar__tags .dta-chip{min-height:36px;font-size:13px;padding:0 14px}
+
+.dta-explorar__status{padding:48px 0;text-align:center;color:var(--dta-ink-soft);margin:0}
+
+.dta-explorar .dta-card h3 a:hover{text-decoration:underline!important}
+
+@media (max-width:900px){
+  .dta-explorar__top{grid-template-columns:1fr}
+}
+
+@media (max-width:640px){
+  .dta-explorar main{padding-bottom:56px}
+  .dta-explorar__top{margin-bottom:40px}
+  .dta-explorar__recent{display:none}
+  .dta-explorar__featured article > :first-child{height:240px!important}
+  .dta-explorar__featured h2{font-size:28px!important}
+  .dta-explorar__featured p{display:none}
+  .dta-explorar__head{flex-direction:column;align-items:flex-start}
+  .dta-explorar__head h2{font-size:28px}
+  .dta-explorar__filters{margin-bottom:24px}
+}

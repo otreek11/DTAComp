@@ -8,3 +8,4 @@ export { OpenReadingBanner } from "./OpenReadingBanner.jsx";
 export { SiteFooter } from "./SiteFooter.jsx";
 export { CheckboxField } from "./CheckboxField.jsx";
 export { defaultNav } from "./defaultNav.js";
+export { AuthLayout } from "./AuthLayout.jsx";
