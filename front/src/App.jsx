@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { SignUpPage } from "./components/signup/index.js";
-import { LoginPage } from "./components/login/index.js";
+import { LoginPage, SignUpPage } from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
 import "./styles/dta.css";
 

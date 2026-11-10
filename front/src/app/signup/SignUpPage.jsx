@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { tokens } from "../../tokens.js";
 import { useNav } from "../../nav/NavContext.jsx";
-import { Field } from "../base/Field.jsx";
-import { CheckboxField } from "../base/CheckboxField.jsx";
-import { SignUpForm } from "./SignUpForm.jsx";
+import { AuthLayout } from "../../components/base/AuthLayout.jsx";
+import { Field } from "../../components/base/Field.jsx";
+import { CheckboxField } from "../../components/base/CheckboxField.jsx";
+import { SignUpForm } from "../../components/signup/SignUpForm.jsx";
 import { fetchInstituicoes, registerUsuario } from "../../services/api.js";
-import "./SignUpPage.css";
 
 /**
  * Tela de Cadastro de Usuário do DTA · UFMA.
@@ -156,180 +156,105 @@ export function SignUpPage({ onNavigateToLogin, onSuccess }) {
   );
 
   return (
-    <div className="dta dta-auth-layout">
-      {/* Coluna Esquerda: Marca e Mensagem Editorial */}
-      <section className="dta-auth-hero" aria-label="Apresentação institucional">
-        <div
-          className="dta-serif"
-          style={{ fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", color: "#ffffff" }}
-        >
-          DTA·UFMA
-        </div>
-
-        <div className="dta-auth-hero-body">
-          <h1
-            className="dta-serif"
-            style={{
-              fontSize: "clamp(30px, 3.6vw, 46px)",
-              fontWeight: 700,
-              lineHeight: 1.15,
-              letterSpacing: "-0.025em",
-              color: "#ffffff",
-              margin: "0 0 24px",
-            }}
-          >
-            Publique o que você pesquisa. Leia o que a comunidade descobre.
-          </h1>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.55,
-              color: "rgba(255, 255, 255, 0.82)",
-              margin: 0,
-            }}
-          >
-            Com uma conta de membro, você envia textos e PDFs, recebe a revisão e divulga seu trabalho.
-          </p>
-        </div>
-
-        <div style={{ fontSize: 13.5, color: "rgba(255, 255, 255, 0.65)" }}>
-          Ler continua livre, sem precisar de conta.
-        </div>
-      </section>
-
-      {/* Coluna Direita: Formulário de Cadastro */}
-      <main className="dta-auth-form-panel">
-        <div style={{ width: "100%", maxWidth: 440 }}>
-          <div className="dta-kicker" style={{ marginBottom: 8 }}>
-            CADASTRO
-          </div>
-          <h2
-            className="dta-serif"
-            style={{
-              fontSize: 34,
-              fontWeight: 700,
-              margin: "0 0 28px",
-              color: tokens.ink,
-              lineHeight: 1.2,
-            }}
-          >
-            Criar conta
-          </h2>
-
-          {success && (
-            <div
-              role="status"
-              style={{
-                backgroundColor: "#f0fdf4",
-                border: "1px solid #bbf7d0",
-                color: "#166534",
-                padding: "12px 16px",
-                borderRadius: 4,
-                marginBottom: 20,
-                fontSize: 14,
-                lineHeight: 1.45,
-              }}
-            >
-              <strong>Conta criada com sucesso!</strong> Seja bem-vindo(a) ao DTA · UFMA.
-            </div>
-          )}
-
-          <SignUpForm
-            onSubmit={handleSubmit}
-            serverError={serverError}
-            submitLabel={submitting ? "Criando conta..." : "Criar conta"}
-            disabled={submitting}
-            footer={footer}
-          >
-            {/* Nome Completo */}
-            <Field label="Nome completo" id="nome" error={errors.nome}>
-              {({ id, ...props }) => (
-                <input
-                  id={id}
-                  type="text"
-                  placeholder="Seu nome"
-                  value={form.nome}
-                  onChange={(e) => handleFieldChange("nome", e.target.value)}
-                  disabled={submitting}
-                  autoComplete="name"
-                  {...props}
-                />
-              )}
-            </Field>
-
-            {/* E-mail */}
-            <Field label="E-mail" id="email" error={errors.email}>
-              {({ id, ...props }) => (
-                <input
-                  id={id}
-                  type="email"
-                  placeholder="voce@exemplo.com"
-                  value={form.email}
-                  onChange={(e) => handleFieldChange("email", e.target.value)}
-                  disabled={submitting}
-                  autoComplete="email"
-                  {...props}
-                />
-              )}
-            </Field>
-
-            {/* Senha */}
-            <Field
-              label="Senha"
-              hint="Mínimo de 8 caracteres, com letras e números."
-              id="senha"
-              error={errors.senha}
-            >
-              {({ id, ...props }) => (
-                <input
-                  id={id}
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.senha}
-                  onChange={(e) => handleFieldChange("senha", e.target.value)}
-                  disabled={submitting}
-                  autoComplete="new-password"
-                  {...props}
-                />
-              )}
-            </Field>
-
-            {/* Instituição */}
-            <Field label="Instituição" id="instituicao" error={errors.idInstituicao}>
-              {({ id, ...props }) => (
-                <select
-                  id={id}
-                  value={form.idInstituicao}
-                  onChange={(e) => handleFieldChange("idInstituicao", e.target.value)}
-                  disabled={submitting || loadingInstituicoes}
-                  {...props}
-                >
-                  {loadingInstituicoes ? (
-                    <option value="">Carregando instituições...</option>
-                  ) : instituicoes.length === 0 ? (
-                    <option value="">Nenhuma instituição disponível</option>
-                  ) : (
-                    instituicoes.map((inst) => (
-                      <option key={inst.id} value={inst.id}>
-                        {inst.sigla ? `${inst.sigla} — ${inst.nome}` : inst.nome}
-                      </option>
-                    ))
-                  )}
-                </select>
-              )}
-            </Field>
-
-            {/* Aceite LGPD */}
-            <CheckboxField
-              id="lgpd"
-              label="Li e aceito o tratamento dos meus dados conforme a política de privacidade (LGPD)."
-              checked={form.lgpd}
-              onChange={(e) => handleFieldChange("lgpd", e.target.checked)}
-              error={errors.lgpd}
+    <AuthLayout
+      kicker="CADASTRO"
+      title="Criar conta"
+      notice={success && <><strong>Conta criada com sucesso!</strong> Seja bem-vindo(a) ao DTA · UFMA.</>}
+    >
+      <SignUpForm
+        onSubmit={handleSubmit}
+        serverError={serverError}
+        submitLabel={submitting ? "Criando conta..." : "Criar conta"}
+        disabled={submitting}
+        footer={footer}
+      >
+        {/* Nome Completo */}
+        <Field label="Nome completo" id="nome" error={errors.nome}>
+          {({ id, ...props }) => (
+            <input
+              id={id}
+              type="text"
+              placeholder="Seu nome"
+              value={form.nome}
+              onChange={(e) => handleFieldChange("nome", e.target.value)}
+              disabled={submitting}
+              autoComplete="name"
+              {...props}
             />
-          </SignUpForm>
-        </div>
-      </main>
-    </div>
+          )}
+        </Field>
+
+        {/* E-mail */}
+        <Field label="E-mail" id="email" error={errors.email}>
+          {({ id, ...props }) => (
+            <input
+              id={id}
+              type="email"
+              placeholder="voce@exemplo.com"
+              value={form.email}
+              onChange={(e) => handleFieldChange("email", e.target.value)}
+              disabled={submitting}
+              autoComplete="email"
+              {...props}
+            />
+          )}
+        </Field>
+
+        {/* Senha */}
+        <Field
+          label="Senha"
+          hint="Mínimo de 8 caracteres, com letras e números."
+          id="senha"
+          error={errors.senha}
+        >
+          {({ id, ...props }) => (
+            <input
+              id={id}
+              type="password"
+              placeholder="••••••••"
+              value={form.senha}
+              onChange={(e) => handleFieldChange("senha", e.target.value)}
+              disabled={submitting}
+              autoComplete="new-password"
+              {...props}
+            />
+          )}
+        </Field>
+
+        {/* Instituição */}
+        <Field label="Instituição" id="instituicao" error={errors.idInstituicao}>
+          {({ id, ...props }) => (
+            <select
+              id={id}
+              value={form.idInstituicao}
+              onChange={(e) => handleFieldChange("idInstituicao", e.target.value)}
+              disabled={submitting || loadingInstituicoes}
+              {...props}
+            >
+              {loadingInstituicoes ? (
+                <option value="">Carregando instituições...</option>
+              ) : instituicoes.length === 0 ? (
+                <option value="">Nenhuma instituição disponível</option>
+              ) : (
+                instituicoes.map((inst) => (
+                  <option key={inst.id} value={inst.id}>
+                    {inst.sigla ? `${inst.sigla} — ${inst.nome}` : inst.nome}
+                  </option>
+                ))
+              )}
+            </select>
+          )}
+        </Field>
+
+        {/* Aceite LGPD */}
+        <CheckboxField
+          id="lgpd"
+          label="Li e aceito o tratamento dos meus dados conforme a política de privacidade (LGPD)."
+          checked={form.lgpd}
+          onChange={(e) => handleFieldChange("lgpd", e.target.checked)}
+          error={errors.lgpd}
+        />
+      </SignUpForm>
+    </AuthLayout>
   );
 }
