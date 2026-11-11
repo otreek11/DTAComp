@@ -132,3 +132,133 @@ export async function fetchTags() {
     return [];
   }
 }
+
+function getAuthHeaders(extra = {}) {
+  const token = typeof window !== "undefined" ? localStorage.getItem("dtacomp_token") : null;
+  return {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
+}
+
+async function extrairErro(res, fallback) {
+  const data = await res.json().catch(() => null);
+  if (data?.errors && Array.isArray(data.errors)) {
+    const msgs = data.errors.map((e) => e.defaultMessage || "").filter(Boolean);
+    if (msgs.length) return msgs.join(", ");
+  }
+  return data?.mensagem || data?.message || fallback;
+}
+
+/** Lista os conteúdos do próprio usuário autenticado (GET /usuarios/me/conteudos). */
+export async function fetchMeusConteudos({ status, page = 0, size = 20, sort = "data,desc" } = {}) {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  params.set("page", String(page));
+  params.set("size", String(size));
+  params.set("sort", sort);
+
+  const res = await fetch(`/usuarios/me/conteudos?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível carregar seus trabalhos."));
+  }
+  const data = await res.json().catch(() => null);
+  return {
+    content: Array.isArray(data?.content) ? data.content : [],
+    page: data?.page || { number: page, totalPages: 0, totalElements: 0, size },
+  };
+}
+
+/** Busca os detalhes completos de um conteúdo (GET /conteudos/{id}), incluindo pareceres de revisão. */
+export async function fetchConteudoDetalhe(id) {
+  const res = await fetch(`/conteudos/${id}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível carregar os detalhes do trabalho."));
+  }
+  return res.json();
+}
+
+/** Faz upload de uma imagem para uso no corpo do artigo (POST /arquivos/imagens). */
+export async function uploadImagem(arquivo) {
+  const formData = new FormData();
+  formData.append("arquivo", arquivo);
+
+  const res = await fetch("/arquivos/imagens", {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Falha ao enviar a imagem (PNG, JPEG ou WebP até 5 MB)."));
+  }
+  return res.json();
+}
+
+/** Submete um novo artigo em texto (POST /conteudos/texto). */
+export async function criarConteudoTexto(payload) {
+  const res = await fetch("/conteudos/texto", {
+    method: "POST",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível enviar o artigo para revisão."));
+  }
+  return res.json();
+}
+
+/** Reenvia um artigo em texto devolvido pela revisão (PUT /conteudos/{id}/texto). */
+export async function atualizarConteudoTexto(id, payload) {
+  const res = await fetch(`/conteudos/${id}/texto`, {
+    method: "PUT",
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível atualizar o artigo."));
+  }
+  return res.json();
+}
+
+/** Submete um novo trabalho em PDF (POST /conteudos/pdf) via multipart/form-data. */
+export async function criarConteudoPDF(dados, arquivo) {
+  const formData = new FormData();
+  formData.append("dados", new Blob([JSON.stringify(dados)], { type: "application/json" }));
+  if (arquivo) {
+    formData.append("arquivo", arquivo);
+  }
+
+  const res = await fetch("/conteudos/pdf", {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível enviar o PDF para revisão."));
+  }
+  return res.json();
+}
+
+/** Reenvia um trabalho em PDF devolvido pela revisão (PUT /conteudos/{id}/pdf). */
+export async function atualizarConteudoPDF(id, dados, arquivo) {
+  const formData = new FormData();
+  formData.append("dados", new Blob([JSON.stringify(dados)], { type: "application/json" }));
+  if (arquivo) {
+    formData.append("arquivo", arquivo);
+  }
+
+  const res = await fetch(`/conteudos/${id}/pdf`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error(await extrairErro(res, "Não foi possível atualizar o PDF."));
+  }
+  return res.json();
+}

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { LoginPage, SignUpPage, ExplorarPage } from "./app/index.js";
+import { LoginPage, SignUpPage, ExplorarPage, PublicarPage } from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
 import "./styles/dta.css";
 
-const ROTAS = ["/", "/login", "/cadastro", "/dashboard"];
+const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/publicar"];
 
 /** "/explorar" é um apelido de "/"; rotas desconhecidas caem na página Explorar. */
 function normalizarRota(pathname) {
@@ -17,7 +17,14 @@ function App() {
     normalizarRota(typeof window !== "undefined" ? window.location.pathname : "/")
   );
 
-  const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [usuarioLogado, setUsuarioLogado] = useState(() => {
+    try {
+      const salvo = typeof window !== "undefined" ? localStorage.getItem("dtacomp_user") : null;
+      return salvo ? JSON.parse(salvo) : null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
     const handlePopState = () => {
@@ -55,6 +62,20 @@ function App() {
       {currentRoute === "/" && (
         <ExplorarPage
           user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : null}
+          onSignIn={() => navigateTo("/login")}
+        />
+      )}
+
+      {currentRoute === "/publicar" && (
+        <PublicarPage
+          user={
+            usuarioLogado
+              ? {
+                  nome: usuarioLogado.nome || usuarioLogado.email,
+                  email: usuarioLogado.email,
+                }
+              : null
+          }
           onSignIn={() => navigateTo("/login")}
         />
       )}

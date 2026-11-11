@@ -1,0 +1,119 @@
+/* Página Publicar — layout de duas colunas no desktop, coluna única em ≤ 900px */
+.dta-publicar {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dta-publicar main {
+  flex: 1;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.dta-publicar__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 40px 64px;
+  align-items: start;
+}
+
+.dta-publicar__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dta-publicar__editor textarea {
+  font: 400 16px var(--dta-sans);
+  line-height: 1.6;
+  padding: 16px;
+  border: 1px solid #8a8f98;
+  border-radius: 4px;
+  min-height: 260px;
+  width: 100%;
+  resize: vertical;
+}
+
+.dta-publicar__pdf-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 260px;
+  padding: 32px 24px;
+  border: 1px dashed #8a8f98;
+  border-radius: 4px;
+  background: #f8f9fa;
+  text-align: center;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dta-publicar__pdf-box[data-dragging="true"] {
+  border-color: var(--dta-teal);
+  background: var(--dta-teal-soft);
+}
+
+.dta-publicar__pdf-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+  color: var(--dta-ink);
+}
+
+.dta-publicar__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dta-publicar__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 2px;
+}
+
+.dta-publicar__alert {
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dta-publicar__alert--error {
+  background: #fdf2ee;
+  border: 1px solid var(--dta-warn);
+  color: var(--dta-warn);
+}
+
+.dta-publicar__alert--success {
+  background: var(--dta-teal-soft);
+  border: 1px solid var(--dta-teal);
+  color: var(--dta-teal);
+}
+
+.dta-publicar__alert--parecer {
+  background: #fdf7f2;
+  border: 1px solid var(--dta-warn);
+  color: var(--dta-ink);
+}
+
+@media (max-width: 900px) {
+  .dta-publicar__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dta-publicar main {
+    padding-top: 24px;
+    padding-bottom: 56px;
+  }
+  .dta-publicar__row {
+    grid-template-columns: 1fr;
+  }
+}
