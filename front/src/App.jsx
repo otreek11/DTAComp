@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { LoginPage, SignUpPage, ExplorarPage, RevisaoPage, ArtigoPage } from "./app/index.js";
+import { LoginPage, SignUpPage, ExplorarPage, PublicarPage, RevisaoPage, ArtigoPage } from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
 import "./styles/dta.css";
 
-const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/revisao", "/artigo"];
+const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/publicar", "/revisao", "/artigo"];
 
 /** "/explorar" é um apelido de "/"; rotas desconhecidas caem na página Explorar. */
 function normalizarRota(pathname) {
@@ -23,11 +23,17 @@ function App() {
     normalizarRota(typeof window !== "undefined" ? window.location.pathname : "/")
   );
 
+  const [usuarioLogado, setUsuarioLogado] = useState(() => {
+    try {
+      const salvo = typeof window !== "undefined" ? localStorage.getItem("dtacomp_user") : null;
+      return salvo ? JSON.parse(salvo) : null;
+    } catch {
+      return null;
+    }
+  });
   const [artigoId, setArtigoId] = useState(() =>
     extrairArtigoId(typeof window !== "undefined" ? window.location.pathname : "/")
   );
-
-  const [usuarioLogado, setUsuarioLogado] = useState(null);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -69,6 +75,20 @@ function App() {
         />
       )}
 
+      {currentRoute === "/publicar" && (
+        <PublicarPage
+          user={
+            usuarioLogado
+              ? {
+                  nome: usuarioLogado.nome || usuarioLogado.email,
+                  email: usuarioLogado.email,
+                }
+              : null
+          }
+          onSignIn={() => navigateTo("/login")}
+        />
+      )}
+      
       {currentRoute === "/revisao" && (
         // TODO: quando houver API, exigir perfil de revisor e usar o nome do usuário autenticado.
         <RevisaoPage user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : undefined} />

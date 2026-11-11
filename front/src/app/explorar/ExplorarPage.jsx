@@ -151,7 +151,7 @@ export function ExplorarPage({ user = null, onSignIn }) {
   return (
     <div className="dta dta-explorar">
       <OpenReadingBanner />
-      <SiteHeader user={user} onSignIn={onSignIn} onAccessibility={() => {}} />
+      <SiteHeader user={user} onSignIn={onSignIn} />
 
       <main className="dta-wrap">
         <HeroIntro

@@ -8,9 +8,9 @@ import { defaultNav } from "./defaultNav.js";
 /**
  * Cabeçalho global. Textos fixos; a página controla só os dados e comportamentos:
  * user: null (visitante) ou { nome }; nav: [{ label, href, current }] (opcional, substitui o padrão);
- * onSignIn, onSignUp, onMenu, onAccessibility: callbacks; progress: 0–100 (barra de leitura).
+ * onSignIn, onSignUp, onMenu: callbacks; progress: 0–100 (barra de leitura).
  */
-export function SiteHeader({ user = null, nav = defaultNav, onSignIn, onSignUp, onMenu, onAccessibility, progress }) {
+export function SiteHeader({ user = null, nav = defaultNav, onSignIn, onSignUp, onMenu, progress }) {
   const { Link, pathname } = useNav();
   return (
     <header style={{ borderBottom: `1px solid ${tokens.lineSoft}`, position: "relative" }}>
@@ -28,7 +28,6 @@ export function SiteHeader({ user = null, nav = defaultNav, onSignIn, onSignUp, 
           })}
         </nav>
         <div className="dta-only-desktop" style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          {onAccessibility && <Button aria-label="Opções de acessibilidade: fonte e contraste" onClick={onAccessibility}>Aa</Button>}
           {user ? <span style={{ fontSize: 14 }}>Olá, {user.nome}</span> : (
             <>
               <Button onClick={onSignIn}>Entrar</Button>
