@@ -87,6 +87,8 @@ function App() {
           }
           onSignIn={() => navigateTo("/login")}
         />
+      )}
+      
       {currentRoute === "/revisao" && (
         // TODO: quando houver API, exigir perfil de revisor e usar o nome do usuário autenticado.
         <RevisaoPage user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : undefined} />
