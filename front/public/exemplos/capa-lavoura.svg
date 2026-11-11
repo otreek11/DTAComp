@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Linhas de plantio sob um céu claro">
+  <rect width="1200" height="380" fill="#dfe7e8"/>
+  <circle cx="930" cy="110" r="52" fill="#f4f7f7"/>
+  <path d="M0 200 Q300 170 600 195 T1200 185 V380 H0Z" fill="#a9c4c8"/>
+  <g stroke="#0b5560" stroke-width="10" stroke-linecap="round" opacity=".9">
+    <path d="M-40 380 L420 215"/><path d="M60 380 L470 215"/><path d="M170 380 L520 215"/><path d="M290 380 L575 215"/>
+    <path d="M420 380 L630 215"/><path d="M560 380 L690 215"/><path d="M700 380 L750 215"/><path d="M840 380 L815 215"/>
+    <path d="M980 380 L880 215"/><path d="M1120 380 L945 215"/><path d="M1260 380 L1010 215"/>
+  </g>
+</svg>

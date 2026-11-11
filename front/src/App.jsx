@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
-import { LoginPage, SignUpPage, ExplorarPage, PublicarPage } from "./app/index.js";
+import { LoginPage, SignUpPage, ExplorarPage, PublicarPage, RevisaoPage, ArtigoPage } from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
 import "./styles/dta.css";
 
-const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/publicar"];
+const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/publicar", "/revisao", "/artigo"];
 
 /** "/explorar" é um apelido de "/"; rotas desconhecidas caem na página Explorar. */
 function normalizarRota(pathname) {
   const rota = (pathname || "/").replace(/\/+$/, "") || "/";
   if (rota === "/explorar") return "/";
+  if (rota.startsWith("/artigo/")) return "/artigo";
   return ROTAS.includes(rota) ? rota : "/";
+}
+
+function extrairArtigoId(pathname) {
+  const m = (pathname || "").match(/^\/artigo\/([^/?#]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
 }
 
 function App() {
@@ -25,6 +31,9 @@ function App() {
       return null;
     }
   });
+  const [artigoId, setArtigoId] = useState(() =>
+    extrairArtigoId(typeof window !== "undefined" ? window.location.pathname : "/")
+  );
 
   useEffect(() => {
     const handlePopState = () => {
@@ -78,6 +87,9 @@ function App() {
           }
           onSignIn={() => navigateTo("/login")}
         />
+      {currentRoute === "/revisao" && (
+        // TODO: quando houver API, exigir perfil de revisor e usar o nome do usuário autenticado.
+        <RevisaoPage user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : undefined} />
       )}
 
       {currentRoute === "/cadastro" && (
@@ -94,6 +106,14 @@ function App() {
             setUsuarioLogado(user);
             navigateTo("/");
           }}
+        />
+      )}
+
+      {currentRoute === "/artigo" && (
+        <ArtigoPage
+          id={artigoId}
+          user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : null}
+          onSignIn={() => navigateTo("/login")}
         />
       )}
 

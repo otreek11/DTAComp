@@ -1,0 +1,53 @@
+/* Página Artigo — 2 colunas (lateral: índice + ferramentas · coluna de leitura); ≤ 1100px lateral sem índice; ≤ 900px (corte do Explorar) uma coluna */
+.dta-artigo{min-height:100vh;display:flex;flex-direction:column}
+.dta-artigo__vazio{flex:1;width:100%;padding-top:48px;padding-bottom:80px}
+
+/* Área de leitura: recebe --dta-font (tamanho) e dta-hc (alto contraste) escolhidos no ReaderTools */
+.dta-artigo__leitura{--dta-font-base:20px;flex:1;padding-bottom:80px}
+.dta-artigo__leitura .dta-prose p{font-size:var(--dta-font)}
+.dta-artigo__leitura .dta-prose blockquote{font-size:calc(var(--dta-font) + 6px)}
+.dta-artigo__leitura .dta-prose h2{scroll-margin-top:24px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+.dta-artigo__aviso{margin:24px 0 0;padding:12px 16px;border:1px solid var(--dta-line);border-left:4px solid var(--dta-teal);border-radius:4px;background:var(--dta-teal-soft);font-size:14px}
+
+.dta-artigo .dta-breadcrumb{padding-top:24px}
+.dta-artigo__cabecalho{max-width:820px;padding-top:24px;margin-bottom:32px;display:flex;flex-direction:column;gap:12px}
+.dta-artigo__cabecalho h1{margin:0;font-size:44px;line-height:1.12}
+.dta-artigo__resumo{margin:0;font-size:20px;line-height:1.55;color:var(--dta-ink-soft)}
+.dta-artigo__capa{margin:0 0 40px;display:flex;flex-direction:column;gap:8px}
+
+.dta-artigo__grid{display:grid;grid-template-columns:236px minmax(0,720px);gap:48px;align-items:start}
+.dta-artigo__coluna,.dta-artigo__corpo{min-width:0}
+.dta-artigo__lateral{position:sticky;top:24px;display:flex;flex-direction:column;gap:32px;min-width:0}
+.dta-artigo__toc,.dta-artigo__ferramentas{display:flex;flex-direction:column;gap:24px;min-width:0}
+.dta-artigo__ferramentas:focus-visible{outline-offset:8px}
+
+/* Alto contraste: ajusta o que usa variáveis e o que é cor fixa nos componentes compartilhados */
+.dta-artigo__leitura.dta-hc{--dta-muted:#d0d3d8;--dta-ink-soft:#e6e8eb;--dta-line:#8a8f98;--dta-line-soft:#4a4f57;--dta-teal:#7fd0dc}
+.dta-artigo__leitura.dta-hc a,.dta-artigo__leitura.dta-hc .dta-kicker{color:#7fd0dc}
+.dta-artigo__leitura.dta-hc .dta-toc a[aria-current="true"]{color:#fff}
+.dta-artigo__leitura.dta-hc .dta-artigo__aviso{color:var(--dta-ink)}
+.dta-artigo__leitura.dta-hc .dta-card{border-top-color:#fff}
+.dta-artigo__leitura.dta-hc .dta-artigo__coluna > section{border-top-color:#fff!important}
+
+@media (max-width:1100px){
+  .dta-artigo__grid{grid-template-columns:200px minmax(0,720px);gap:40px}
+  .dta-artigo__toc{display:none}
+}
+
+@media (max-width:900px){
+  .dta-artigo__leitura{padding-bottom:56px}
+  .dta-artigo__cabecalho{padding-top:16px}
+  .dta-artigo__cabecalho h1{font-size:32px}
+  .dta-artigo__resumo{font-size:18px}
+  .dta-artigo__grid{grid-template-columns:1fr;gap:32px}
+  .dta-artigo__lateral{position:static}
+  .dta-artigo__ferramentas{flex-direction:row;flex-wrap:wrap;gap:16px 32px}
+}
+
+@media (max-width:640px){
+  .dta-artigo__leitura{--dta-font-base:18px}
+  .dta-artigo__capa > *{height:220px!important}
+  .dta-artigo__capa{margin-bottom:28px}
+}
