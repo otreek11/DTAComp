@@ -92,3 +92,8 @@
   .dta-filterbar--scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px}
   .dta-filterbar--scroll::-webkit-scrollbar{display:none}
 }
+
+/* Trilha de navegação (Artigo) */
+.dta-breadcrumb ol{display:flex;flex-wrap:wrap;gap:0 8px;margin:0;padding:0;list-style:none;font-size:13px;color:var(--dta-muted)}
+.dta-breadcrumb li + li::before{content:"/";margin-right:8px}
+.dta-breadcrumb a{color:inherit}
