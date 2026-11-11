@@ -72,9 +72,10 @@ export function ExplorarPage({ user = null, onSignIn }) {
   const [busca, setBusca] = useState("");
   const [q, setQ] = useState("");
   const [tipo, setTipo] = useState("");
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState(() => new URLSearchParams(window.location.search).get("tag") ?? "");
   const [sort, setSort] = useState("data,desc");
   const [tags, setTags] = useState([]);
+  
 
   // Listagem: `lista.chave` identifica a consulta que gerou o resultado; enquanto
   // difere da consulta atual, a página está carregando.

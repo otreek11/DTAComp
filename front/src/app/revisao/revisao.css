@@ -1,0 +1,33 @@
+/* Página Revisão — desktop por padrão; ≤ 1100px reorganiza; ≤ 900px (mesmo corte do Explorar) empilha */
+.dta-revisao{min-height:100vh;display:flex;flex-direction:column;--dta-font:18px}
+/* 3 colunas pedem mais largura que os 1200px padrão para manter ~70 caracteres por linha no texto */
+.dta-revisao .dta-wrap{max-width:1440px}
+.dta-revisao main{flex:1;width:100%;padding-top:32px;padding-bottom:80px}
+
+.dta-revisao__grid{display:grid;grid-template-columns:minmax(220px,280px) minmax(0,1fr) minmax(280px,340px);gap:40px;align-items:start}
+
+.dta-revisao__aviso{margin:0 0 24px;padding:12px 16px;border:1px solid var(--dta-line);border-left:4px solid var(--dta-teal);border-radius:4px;background:var(--dta-teal-soft);font-size:14px}
+
+.dta-revisao__texto{min-width:0}
+.dta-revisao__titulo{margin:6px 0 20px;font-size:32px;line-height:1.2}
+.dta-revisao__texto .dta-prose{max-width:70ch}
+.dta-revisao__texto .dta-prose p{font-size:var(--dta-font)}
+
+/* Trechos apontados pela IA: cor + sublinhado (não depende só de cor) */
+.dta-revisao__texto mark{background:transparent;color:var(--dta-warn);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;cursor:pointer;border-radius:2px}
+.dta-revisao__texto mark[data-ativo="true"]{background:#f4e4da}
+
+.dta-revisao__pdf{margin:0;padding:24px;border:1px dashed var(--dta-line);border-radius:4px}
+.dta-revisao__pdf-viewer{display:block;width:100%;height:80vh;border:1px solid var(--dta-line);border-radius:4px}
+
+@media (max-width:1100px){
+  .dta-revisao__grid{grid-template-columns:minmax(220px,260px) minmax(0,1fr);gap:32px}
+  .dta-revisao__grid > aside{grid-column:1 / -1}
+}
+
+@media (max-width:900px){
+  .dta-revisao main{padding-top:24px;padding-bottom:56px}
+  .dta-revisao__grid{grid-template-columns:1fr}
+  .dta-revisao__titulo{font-size:28px}
+}
+
