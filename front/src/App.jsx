@@ -1,174 +1,203 @@
-import { useState, useEffect } from "react";
-import { LoginPage, SignUpPage, ExplorarPage, PublicarPage, RevisaoPage, ArtigoPage } from "./app/index.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  LoginPage,
+  SignUpPage,
+  ExplorarPage,
+  PublicarPage,
+  RevisaoPage,
+  ArtigoPage,
+  MeusTrabalhosPage,
+  ContaPage,
+  AdminPage,
+} from "./app/index.js";
 import { NavProvider } from "./nav/NavProvider.jsx";
+import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
+import { SiteHeader } from "./components/base/SiteHeader.jsx";
+import { SiteFooter } from "./components/base/SiteFooter.jsx";
+import { EmptyState } from "./components/home/EmptyState.jsx";
 import "./styles/dta.css";
 
-const ROTAS = ["/", "/login", "/cadastro", "/dashboard", "/publicar", "/revisao", "/artigo"];
+/**
+ * Rotas da SPA. `perfis`: quem pode acessar (ausente = público; [] = qualquer usuário logado).
+ * "/explorar" é apelido de "/"; rotas desconhecidas caem em Explorar.
+ */
+const ROTAS = {
+  "/": {},
+  "/login": {},
+  "/cadastro": {},
+  "/artigo": {},
+  "/publicar": { perfis: [] },
+  "/dashboard": { perfis: [] },
+  "/conta": { perfis: [] },
+  "/revisao": { perfis: ["revisor"] },
+  "/admin": { perfis: ["admin"] },
+};
 
-/** "/explorar" é um apelido de "/"; rotas desconhecidas caem na página Explorar. */
-function normalizarRota(pathname) {
-  const rota = (pathname || "/").replace(/\/+$/, "") || "/";
-  if (rota === "/explorar") return "/";
-  if (rota.startsWith("/artigo/")) return "/artigo";
-  return ROTAS.includes(rota) ? rota : "/";
+function lerLocalizacao() {
+  if (typeof window === "undefined") return { rota: "/", artigoId: null, search: "", caminho: "/" };
+  const { pathname, search } = window.location;
+  const caminho = (pathname || "/").replace(/\/+$/, "") || "/";
+  const artigo = caminho.match(/^\/artigo\/([^/]+)$/);
+  let rota = caminho;
+  if (caminho === "/explorar") rota = "/";
+  else if (artigo) rota = "/artigo";
+  else if (!ROTAS[caminho]) rota = "/";
+  return { rota, artigoId: artigo ? decodeURIComponent(artigo[1]) : null, search, caminho: caminho + search };
 }
 
-function extrairArtigoId(pathname) {
-  const m = (pathname || "").match(/^\/artigo\/([^/?#]+)/);
-  return m ? decodeURIComponent(m[1]) : null;
+function ehLinkInterno(a, e) {
+  if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+  if (a.target && a.target !== "_self") return false;
+  if (a.hasAttribute("download")) return false;
+  const href = a.getAttribute("href");
+  if (!href || !href.startsWith("/") || href.startsWith("//") || href.startsWith("/api/")) return false;
+  return true;
+}
+
+function Redirecionar({ navigate, para }) {
+  useEffect(() => {
+    navigate(para, { replace: true });
+  }, [navigate, para]);
+  return null;
+}
+
+function AcessoRestrito({ navigate }) {
+  return (
+    <div className="dta" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <SiteHeader />
+      <main className="dta-wrap" style={{ flex: 1 }}>
+        <EmptyState
+          title="Acesso restrito"
+          text="Seu perfil não tem permissão para acessar esta página."
+          action={<button type="button" className="dta-btn dta-btn--primary" onClick={() => navigate("/")}>Voltar para Explorar</button>}
+        />
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
+
+function Rotas() {
+  const { usuario, pronto } = useAuth();
+  const [local, setLocal] = useState(lerLocalizacao);
+
+  const navigate = useCallback((path, { replace = false } = {}) => {
+    if (typeof window !== "undefined" && window.history) {
+      if (replace) window.history.replaceState({}, "", path);
+      else window.history.pushState({}, "", path);
+      window.scrollTo(0, 0);
+    }
+    setLocal(lerLocalizacao());
+  }, []);
+
+  // Voltar/avançar do navegador.
+  useEffect(() => {
+    const aoVoltar = () => setLocal(lerLocalizacao());
+    window.addEventListener("popstate", aoVoltar);
+    return () => window.removeEventListener("popstate", aoVoltar);
+  }, []);
+
+  // Qualquer <a href="/..."> da página navega sem recarregar.
+  useEffect(() => {
+    const aoClicar = (e) => {
+      const a = e.target.closest?.("a[href]");
+      if (!ehLinkInterno(a, e)) return;
+      e.preventDefault();
+      navigate(a.getAttribute("href"));
+    };
+    document.addEventListener("click", aoClicar);
+    return () => document.removeEventListener("click", aoClicar);
+  }, [navigate]);
+
+  const { rota, artigoId, search, caminho } = local;
+  const regra = ROTAS[rota] ?? {};
+  const exigeLogin = Array.isArray(regra.perfis);
+
+  const destinoAposLogin = () => {
+    const next = new URLSearchParams(search).get("next");
+    return next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  };
+
+  // Componente estável: recriá-lo a cada render remontaria tudo que estiver dentro dos links.
+  const Link = useMemo(
+    () =>
+      function LinkSpa({ href, onClick, children, ...rest }) {
+        return (
+          <a
+            href={href}
+            onClick={(e) => {
+              if (onClick) onClick(e);
+              if (!e.defaultPrevented && href && href.startsWith("/") && !href.startsWith("/api/")) {
+                e.preventDefault();
+                navigate(href);
+              }
+            }}
+            {...rest}
+          >
+            {children}
+          </a>
+        );
+      },
+    [navigate],
+  );
+
+  let pagina;
+  if (exigeLogin && !pronto) {
+    pagina = <div className="dta" role="status" style={{ padding: 48, textAlign: "center" }}>Carregando…</div>;
+  } else if (exigeLogin && !usuario) {
+    // Rota protegida sem sessão → login, voltando depois para onde estava.
+    pagina = <Redirecionar navigate={navigate} para={`/login?next=${encodeURIComponent(caminho)}`} />;
+  } else if (regra.perfis?.length && !regra.perfis.includes(usuario.perfil)) {
+    pagina = <AcessoRestrito navigate={navigate} />;
+  } else {
+    switch (rota) {
+      case "/login":
+        pagina = (
+          <LoginPage
+            onNavigateToSignUp={() => navigate("/cadastro")}
+            onSuccess={() => navigate(destinoAposLogin(), { replace: true })}
+          />
+        );
+        break;
+      case "/cadastro":
+        pagina = <SignUpPage onNavigateToLogin={() => navigate("/login")} onSuccess={() => navigate("/dashboard", { replace: true })} />;
+        break;
+      case "/artigo":
+        pagina = <ArtigoPage id={artigoId} />;
+        break;
+      case "/publicar":
+        pagina = <PublicarPage key={search} />;
+        break;
+      case "/dashboard":
+        pagina = <MeusTrabalhosPage />;
+        break;
+      case "/conta":
+        pagina = <ContaPage />;
+        break;
+      case "/revisao":
+        pagina = <RevisaoPage />;
+        break;
+      case "/admin":
+        pagina = <AdminPage />;
+        break;
+      default:
+        // key: "/?tag=x" vindo do artigo recria a página com o filtro da URL.
+        pagina = <ExplorarPage key={search} />;
+    }
+  }
+
+  return (
+    <NavProvider link={Link} pathname={rota === "/artigo" && artigoId ? `/artigo/${artigoId}` : rota} search={search} navigate={navigate}>
+      {pagina}
+    </NavProvider>
+  );
 }
 
 function App() {
-  const [currentRoute, setCurrentRoute] = useState(() =>
-    normalizarRota(typeof window !== "undefined" ? window.location.pathname : "/")
-  );
-
-  const [usuarioLogado, setUsuarioLogado] = useState(() => {
-    try {
-      const salvo = typeof window !== "undefined" ? localStorage.getItem("dtacomp_user") : null;
-      return salvo ? JSON.parse(salvo) : null;
-    } catch {
-      return null;
-    }
-  });
-  const [artigoId, setArtigoId] = useState(() =>
-    extrairArtigoId(typeof window !== "undefined" ? window.location.pathname : "/")
-  );
-
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentRoute(normalizarRota(window.location.pathname));
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  function navigateTo(path) {
-    if (typeof window !== "undefined" && window.history?.pushState) {
-      window.history.pushState({}, "", path);
-    }
-    setCurrentRoute(normalizarRota(path));
-  }
-
-  const customLink = ({ href, onClick, children, ...rest }) => (
-    <a
-      href={href}
-      onClick={(e) => {
-        if (onClick) onClick(e);
-        if (!e.defaultPrevented && href && href.startsWith("/")) {
-          e.preventDefault();
-          navigateTo(href);
-        }
-      }}
-      {...rest}
-    >
-      {children}
-    </a>
-  );
-
   return (
-    <NavProvider link={customLink} pathname={currentRoute}>
-      {currentRoute === "/" && (
-        <ExplorarPage
-          user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : null}
-          onSignIn={() => navigateTo("/login")}
-        />
-      )}
-
-      {currentRoute === "/publicar" && (
-        <PublicarPage
-          user={
-            usuarioLogado
-              ? {
-                  nome: usuarioLogado.nome || usuarioLogado.email,
-                  email: usuarioLogado.email,
-                }
-              : null
-          }
-          onSignIn={() => navigateTo("/login")}
-        />
-      )}
-      
-      {currentRoute === "/revisao" && (
-        // TODO: quando houver API, exigir perfil de revisor e usar o nome do usuário autenticado.
-        <RevisaoPage user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : undefined} />
-      )}
-
-      {currentRoute === "/cadastro" && (
-        <SignUpPage
-          onNavigateToLogin={() => navigateTo("/login")}
-          onSuccess={() => navigateTo("/dashboard")}
-        />
-      )}
-
-      {currentRoute === "/login" && (
-        <LoginPage
-          onNavigateToSignUp={() => navigateTo("/cadastro")}
-          onSuccess={(user) => {
-            setUsuarioLogado(user);
-            navigateTo("/");
-          }}
-        />
-      )}
-
-      {currentRoute === "/artigo" && (
-        <ArtigoPage
-          id={artigoId}
-          user={usuarioLogado ? { nome: usuarioLogado.nome || usuarioLogado.email } : null}
-          onSignIn={() => navigateTo("/login")}
-        />
-      )}
-
-      {currentRoute === "/dashboard" && (
-        <div
-          className="dta"
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 16,
-            padding: 24,
-            textAlign: "center",
-          }}
-        >
-          <div className="dta-kicker">PAINEL DO MEMBRO</div>
-          <h2 className="dta-serif" style={{ fontSize: 32, margin: 0 }}>
-            Bem-vindo(a) ao DTA · UFMA!
-          </h2>
-          {usuarioLogado && (
-            <p style={{ margin: 0, color: "var(--dta-muted)" }}>
-              Autenticado como: <strong>{usuarioLogado.email}</strong> ({usuarioLogado.perfil})
-            </p>
-          )}
-          <p style={{ maxWidth: 520, lineHeight: 1.55, margin: 0, color: "var(--dta-ink-soft)" }}>
-            Você já tem acesso à submissão de trabalhos acadêmicos, visualização de revisões e divulgação de pesquisas.
-          </p>
-          <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
-            <button
-              type="button"
-              className="dta-btn"
-              onClick={() => {
-                localStorage.removeItem("dtacomp_token");
-                localStorage.removeItem("dtacomp_user");
-                setUsuarioLogado(null);
-                navigateTo("/login");
-              }}
-            >
-              Sair da conta
-            </button>
-            <button
-              type="button"
-              className="dta-btn dta-btn--primary"
-              onClick={() => navigateTo("/cadastro")}
-            >
-              Ir para Cadastro
-            </button>
-          </div>
-        </div>
-      )}
-    </NavProvider>
+    <AuthProvider>
+      <Rotas />
+    </AuthProvider>
   );
 }
 

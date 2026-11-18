@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { tokens } from "../../tokens.js";
 import { useNav } from "../../nav/NavContext.jsx";
+import { useAuth } from "../../auth/AuthContext.jsx";
 import { AuthLayout } from "../../components/base/AuthLayout.jsx";
 import { Field } from "../../components/base/Field.jsx";
 import { CheckboxField } from "../../components/base/CheckboxField.jsx";
@@ -14,6 +15,7 @@ import { fetchInstituicoes, registerUsuario } from "../../services/api.js";
  */
 export function SignUpPage({ onNavigateToLogin, onSuccess }) {
   const { Link } = useNav();
+  const { entrar } = useAuth();
 
   const [instituicoes, setInstituicoes] = useState([]);
   const [loadingInstituicoes, setLoadingInstituicoes] = useState(true);
@@ -48,6 +50,8 @@ export function SignUpPage({ onNavigateToLogin, onSuccess }) {
             setForm((prev) => ({ ...prev, idInstituicao: list[0].id }));
           }
         }
+      } catch (err) {
+        if (isMounted) setServerError(err.message || "Não foi possível carregar as instituições.");
       } finally {
         if (isMounted) {
           setLoadingInstituicoes(false);
@@ -122,8 +126,7 @@ export function SignUpPage({ onNavigateToLogin, onSuccess }) {
       });
 
       if (response?.token) {
-        localStorage.setItem("dtacomp_token", response.token);
-        localStorage.setItem("dtacomp_user", JSON.stringify(response));
+        entrar(response);
       }
 
       setSuccess(true);

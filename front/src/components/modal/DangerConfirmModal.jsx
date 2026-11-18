@@ -12,7 +12,7 @@ export function DangerConfirmModal({ open, onCancel, onConfirm, title, message, 
     <Modal open={open} onClose={busy ? undefined : onCancel} role="alertdialog" labelledBy={title ? `${id}-t` : `${id}-d`} describedBy={`${id}-d`} closeOnBackdrop={!busy}>
       <div className="dta-modal__body">
         {title && <h2 id={`${id}-t`} className="dta-serif dta-modal__title">{title}</h2>}
-        <p id={`${id}-d`} className="dta-modal__text">{message}</p>
+        <div id={`${id}-d`} className="dta-modal__text">{message}</div>
         <div className="dta-modal__actions">
           <Button onClick={onCancel} disabled={busy} data-autofocus>{cancelLabel}</Button>
           <Button variant="danger" onClick={onConfirm} disabled={busy}>{confirmLabel}</Button>

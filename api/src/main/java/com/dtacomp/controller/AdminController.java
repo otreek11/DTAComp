@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
+import com.dtacomp.dto.usuario.UsuarioResponse;
 import com.dtacomp.exception.ConflitoException;
 import com.dtacomp.service.PublicacaoService;
 import com.dtacomp.service.UsuarioService;
@@ -40,17 +41,19 @@ public class AdminController {
     }
 
     @GetMapping("/usuarios")
-    public List<Usuario> listarUsuarios(
+    public List<UsuarioResponse> listarUsuarios(
             @RequestParam(required = false) TipoPerfil perfil,
             @RequestParam(required = false) UUID instituicaoId) {
         
+        List<Usuario> usuarios;
         if (perfil != null) {
-            return usuarioService.buscarPorPerfil(perfil);
+            usuarios = usuarioService.buscarPorPerfil(perfil);
+        } else if (instituicaoId != null) {
+            usuarios = usuarioService.buscarPorInstituicao(instituicaoId);
+        } else {
+            usuarios = usuarioService.listarTodos();
         }
-        if (instituicaoId != null) {
-            return usuarioService.buscarPorInstituicao(instituicaoId);
-        }
-        return usuarioService.listarTodos();
+        return usuarios.stream().map(UsuarioResponse::from).toList();
     }
 
     @PutMapping("/usuarios/{id}/perfil")

@@ -4,3 +4,6 @@ export { ExplorarPage } from "./explorar/ExplorarPage.jsx";
 export { PublicarPage } from "./publicar/PublicarPage.jsx";
 export { RevisaoPage } from "./revisao/RevisaoPage.jsx";
 export { ArtigoPage } from "./artigo/ArtigoPage.jsx";
+export { MeusTrabalhosPage } from "./meus-trabalhos/MeusTrabalhosPage.jsx";
+export { ContaPage } from "./conta/ContaPage.jsx";
+export { AdminPage } from "./admin/AdminPage.jsx";

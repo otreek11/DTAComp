@@ -14,7 +14,12 @@ import { ArticleByline } from "../../components/article/ArticleByline.jsx";
 import { RelatedList } from "../../components/article/RelatedList.jsx";
 import { ConfirmModal } from "../../components/modal/ConfirmModal.jsx";
 import { ImageViewerModal } from "../../components/modal/ImageViewerModal.jsx";
-import { ARTIGOS_MOCK } from "./mockArtigo.js";
+import { DangerConfirmModal } from "../../components/modal/DangerConfirmModal.jsx";
+import { Field } from "../../components/base/Field.jsx";
+import { Button } from "../../components/base/Button.jsx";
+import { useAuth } from "../../auth/AuthContext.jsx";
+import { adminDespublicar, fetchConteudoDetalhe, fetchConteudos, urlDaApi } from "../../services/api.js";
+import { htmlParaBlocos } from "../../services/conteudo.js";
 import "./artigo.css";
 
 const ROTULO_TIPO = { texto: "Artigo", pdf: "PDF" };
@@ -85,24 +90,66 @@ function paraRelacionado(a) {
   };
 }
 
-/**
- * Página de um trabalho publicado. `id` vem da rota (/artigo/:id).
- * Por enquanto usa dados locais (mockArtigo.js); nada é buscado em API.
- */
-export function ArtigoPage({ id = null, user = null, onSignIn }) {
-  const { Link } = useNav();
-  // TODO(API): buscar o conteúdo por id. Sem id (/artigo), cai no primeiro exemplo para o menu funcionar.
-  const artigo = id ? ARTIGOS_MOCK.find((a) => a.id === id) : ARTIGOS_MOCK[0];
+/** ConteudoDetalheResponse -> formato usado pela leitura. */
+function paraArtigo(d) {
+  return {
+    id: d.id,
+    tipo: d.tipo,
+    status: d.status,
+    titulo: d.titulo,
+    resumo: d.resumo,
+    data: d.data,
+    autores: d.autores || [],
+    tags: d.tags || [],
+    blocks: d.tipo === "texto" ? htmlParaBlocos(d.texto?.corpoHtml, d.texto?.imagens) : [],
+    arquivoURL: d.pdf?.url ? urlDaApi(d.pdf.url) : null,
+  };
+}
 
-  if (!artigo) {
+/**
+ * Página de um trabalho. `id` vem da rota (/artigo/:id) e o conteúdo de GET /conteudos/{id}.
+ * Visitantes só enxergam trabalhos publicados; autor, revisor e admin também os demais.
+ */
+export function ArtigoPage({ id = null }) {
+  const { Link } = useNav();
+  const [estado, setEstado] = useState({ id: null, artigo: null, erro: null });
+
+  useEffect(() => {
+    if (!id) return undefined;
+    let ativo = true;
+    fetchConteudoDetalhe(id)
+      .then((d) => ativo && setEstado({ id, artigo: paraArtigo(d), erro: null }))
+      .catch((e) => ativo && setEstado({ id, artigo: null, erro: e }));
+    return () => {
+      ativo = false;
+    };
+  }, [id]);
+
+  const carregando = Boolean(id) && estado.id !== id;
+
+  if (carregando) {
     return (
       <div className="dta dta-artigo">
         <OpenReadingBanner />
-        <SiteHeader user={user} onSignIn={onSignIn} />
+        <SiteHeader />
+        <main className="dta-wrap dta-artigo__vazio" aria-busy="true">
+          <p className="dta-meta" role="status">Carregando trabalho…</p>
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
+
+  if (!estado.artigo) {
+    const naoEncontrado = !id || estado.erro?.status === 404 || estado.erro?.status === 400;
+    return (
+      <div className="dta dta-artigo">
+        <OpenReadingBanner />
+        <SiteHeader />
         <main className="dta-wrap dta-artigo__vazio">
           <EmptyState
-            title="Trabalho não encontrado"
-            text="O endereço pode estar incorreto ou o trabalho não está mais disponível."
+            title={naoEncontrado ? "Trabalho não encontrado" : "Não foi possível carregar o trabalho"}
+            text={naoEncontrado ? "O endereço pode estar incorreto ou o trabalho não está mais disponível." : estado.erro?.message}
             action={<Link href="/" className="dta-btn dta-btn--primary" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", color: "#fff" }}>Voltar para Explorar</Link>}
           />
         </main>
@@ -112,10 +159,35 @@ export function ArtigoPage({ id = null, user = null, onSignIn }) {
   }
 
   // key: ao trocar de trabalho, o estado de leitura (modais, avisos) recomeça limpo
-  return <ArtigoLeitura key={artigo.id} artigo={artigo} user={user} onSignIn={onSignIn} />;
+  return <ArtigoLeitura key={estado.artigo.id} artigo={estado.artigo} />;
 }
 
-function ArtigoLeitura({ artigo, user, onSignIn }) {
+/** Busca até 3 trabalhos publicados com a primeira tag (ou os mais recentes). */
+function useRelacionados(artigo) {
+  const [itens, setItens] = useState([]);
+  useEffect(() => {
+    let ativo = true;
+    const tag = artigo.tags?.[0];
+    fetchConteudos({ tags: tag ? [tag] : [], size: 4, sort: "data,desc" })
+      .then((res) => {
+        if (!ativo) return;
+        setItens(res.content.filter((c) => c.id !== artigo.id).slice(0, 3).map(paraRelacionado));
+      })
+      .catch(() => ativo && setItens([]));
+    return () => {
+      ativo = false;
+    };
+  }, [artigo]);
+  return itens;
+}
+
+function ArtigoLeitura({ artigo }) {
+  const { navigate } = useNav();
+  const { temPerfil } = useAuth();
+  const [despublicando, setDespublicando] = useState(false);
+  const [motivo, setMotivo] = useState("");
+  const [erroMotivo, setErroMotivo] = useState("");
+  const [enviandoDespublicar, setEnviandoDespublicar] = useState(false);
   const [prefs, setPrefs] = useState(lerPreferencias);
   const [ativoId, setAtivoId] = useState(null);
   const [progresso, setProgresso] = useState(0);
@@ -130,11 +202,10 @@ function ArtigoLeitura({ artigo, user, onSignIn }) {
     () => artigo.blocks.filter((b) => b.type === "h2" && b.id).map((b) => ({ id: b.id, label: b.text })),
     [artigo],
   );
-  const relacionados = ARTIGOS_MOCK.filter((a) => a.id !== artigo.id).slice(0, 3).map(paraRelacionado);
+  const relacionados = useRelacionados(artigo);
   const autores = nomesAutores(artigo.autores);
   const siglas = siglasInstituicao(artigo.autores);
-  const area = artigo.area ?? ROTULO_TIPO[artigo.tipo];
-  const departamento = artigo.autores?.find((a) => a.departamento)?.departamento;
+  const area = ROTULO_TIPO[artigo.tipo] ?? artigo.tipo;
   const minutos = artigo.tipo === "texto" ? minutosDeLeitura(artigo.blocks) : null;
 
   const citacao = useMemo(() => {
@@ -222,6 +293,23 @@ function ArtigoLeitura({ artigo, user, onSignIn }) {
     setCitacaoCopiada(false);
   }
 
+  async function confirmarDespublicar() {
+    if (!motivo.trim()) {
+      setErroMotivo("Informe o motivo da despublicação.");
+      return;
+    }
+    setEnviandoDespublicar(true);
+    try {
+      await adminDespublicar(artigo.id, motivo.trim());
+      setDespublicando(false);
+      navigate("/");
+    } catch (e) {
+      setErroMotivo(e.message);
+    } finally {
+      setEnviandoDespublicar(false);
+    }
+  }
+
   function irParaFerramentas() {
     ferramentasRef.current?.scrollIntoView({ block: "center" });
     ferramentasRef.current?.focus();
@@ -233,7 +321,7 @@ function ArtigoLeitura({ artigo, user, onSignIn }) {
   return (
     <div className="dta dta-artigo">
       <OpenReadingBanner />
-      <SiteHeader user={user} onSignIn={onSignIn} onAccessibility={irParaFerramentas} progress={progresso} />
+      <SiteHeader onAccessibility={irParaFerramentas} progress={progresso} />
 
       <div
         className={`dta dta-artigo__leitura${prefs.contraste ? " dta-hc" : ""}`}
@@ -241,6 +329,11 @@ function ArtigoLeitura({ artigo, user, onSignIn }) {
       >
         <main className="dta-wrap">
           {aviso && <p className="dta-artigo__aviso" role="status">{aviso}</p>}
+          {artigo.status && artigo.status !== "publicado" && (
+            <p className="dta-artigo__aviso" role="status">
+              {artigo.status === "revisao" ? "Este trabalho ainda está em revisão e não é visível ao público." : "Este trabalho foi devolvido ao autor e não é visível ao público."}
+            </p>
+          )}
 
           <Breadcrumb items={[{ label: "Explorar", href: "/" }, { label: area }]} />
 
@@ -296,27 +389,53 @@ function ArtigoLeitura({ artigo, user, onSignIn }) {
               <AboutWork
                 label="Sobre o trabalho"
                 name={autores.join(", ")}
-                subtitle={[siglas.join(", "), departamento].filter(Boolean).join(" · ")}
+                subtitle={siglas.join(", ")}
                 rows={[
                   { label: "Instituição", value: siglas.join(", ") },
-                  artigo.revisor && { label: "Revisado por", value: artigo.revisor },
+                  { label: "Formato", value: ROTULO_TIPO[artigo.tipo] },
                   { label: "Publicado em", value: formatarData(artigo.data) },
                 ].filter((r) => r && r.value)}
                 tags={artigo.tags}
-                onTag={(tag) => window.location.assign(`/?tag=${encodeURIComponent(tag)}`)}
+                onTag={(tag) => navigate(`/?tag=${encodeURIComponent(tag)}`)}
                 // TODO(API): trocar pelo fluxo de denúncia quando existir; por ora aponta às diretrizes.
                 footer={<>Encontrou algo impróprio? <a href="/diretrizes">Denunciar conteúdo</a></>}
               />
             </div>
           </div>
 
-          <RelatedList title="Leia também" items={relacionados} />
+          {temPerfil("admin") && artigo.status === "publicado" && (
+            <div style={{ marginTop: 32 }}>
+              <Button variant="danger" onClick={() => { setMotivo(""); setErroMotivo(""); setDespublicando(true); }}>
+                Despublicar trabalho
+              </Button>
+            </div>
+          )}
+
+          {relacionados.length > 0 && <RelatedList title="Leia também" items={relacionados} />}
         </main>
       </div>
 
       <SiteFooter />
 
       <ImageViewerModal open={Boolean(imagem)} onClose={() => setImagem(null)} src={imagem?.src} alt={imagem?.alt} caption={imagem?.caption} />
+      <DangerConfirmModal
+        open={despublicando}
+        busy={enviandoDespublicar}
+        onCancel={() => setDespublicando(false)}
+        onConfirm={confirmarDespublicar}
+        title="Despublicar trabalho?"
+        message={
+          <>
+            “{artigo.titulo}” deixará de ser visível ao público e voltará ao autor.
+            <Field label="Motivo" id="motivo-despublicar" error={erroMotivo}>
+              {({ id, ...props }) => (
+                <textarea id={id} rows={3} value={motivo} onChange={(e) => { setMotivo(e.target.value); setErroMotivo(""); }} {...props} />
+              )}
+            </Field>
+          </>
+        }
+        confirmLabel="Despublicar"
+      />
       <ConfirmModal
         open={citando}
         onCancel={fecharCitacao}

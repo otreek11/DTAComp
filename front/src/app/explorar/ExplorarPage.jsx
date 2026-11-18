@@ -11,6 +11,7 @@ import { FilterBar } from "../../components/home/FilterBar.jsx";
 import { ArticleGrid } from "../../components/home/ArticleGrid.jsx";
 import { EmptyState } from "../../components/home/EmptyState.jsx";
 import { fetchConteudos, fetchTags } from "../../services/api.js";
+import { useNav } from "../../nav/NavContext.jsx";
 import "./explorar.css";
 
 const TAMANHO_PAGINA = 6;
@@ -64,7 +65,8 @@ function paraCard(conteudo) {
  * Página Explorar (início): destaque + recém-publicados e a listagem filtrável
  * de trabalhos publicados, consumindo GET /conteudos e GET /tags.
  */
-export function ExplorarPage({ user = null, onSignIn }) {
+export function ExplorarPage() {
+  const { Link } = useNav();
   // Destaque e recém-publicados (independentes dos filtros)
   const [destaques, setDestaques] = useState([]);
 
@@ -151,7 +153,7 @@ export function ExplorarPage({ user = null, onSignIn }) {
   return (
     <div className="dta dta-explorar">
       <OpenReadingBanner />
-      <SiteHeader user={user} onSignIn={onSignIn} />
+      <SiteHeader />
 
       <main className="dta-wrap">
         <HeroIntro
@@ -163,9 +165,9 @@ export function ExplorarPage({ user = null, onSignIn }) {
 
         {destaque && (
           <section className="dta-explorar__top" aria-label="Destaques">
-            <a href={destaque.href} className="dta-explorar__featured">
+            <Link href={destaque.href} className="dta-explorar__featured">
               <FeaturedArticle item={{ ...destaque, kicker: `Destaque · ${destaque.kicker}` }} />
-            </a>
+            </Link>
             {recentes.length > 0 && (
               <div className="dta-explorar__recent">
                 <RecentList

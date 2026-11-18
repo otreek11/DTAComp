@@ -1,7 +1,7 @@
 import { Cover } from "../base/Cover.jsx";
 
 /**
- * blocks: [{ type: "p" | "h2" | "quote" | "image", text?, src?, alt?, caption?, id? }]
+ * blocks: [{ type: "p" | "h2" | "quote" | "image" | "list" | "code" | "hr", text?, src?, alt?, caption?, id?, items?, ordered? }]
  * Renderiza igual para qualquer origem de conteúdo.
  * renderText(bloco) (opcional): devolve o conteúdo de texto do bloco (ex.: com trechos
  * destacados). Sem ela, o texto é exibido como está.
@@ -14,6 +14,12 @@ export function ArticleBody({ blocks = [], renderText, onImageClick }) {
       {blocks.map((b, i) => {
         if (b.type === "h2") return <h2 key={i} id={b.id}>{texto(b)}</h2>;
         if (b.type === "quote") return <blockquote key={i}>{texto(b)}</blockquote>;
+        if (b.type === "hr") return <hr key={i} />;
+        if (b.type === "code") return <pre key={i} style={{ overflowX: "auto", padding: 16, background: "#f4f5f6", borderRadius: 4 }}><code>{b.text}</code></pre>;
+        if (b.type === "list") {
+          const Lista = b.ordered ? "ol" : "ul";
+          return <Lista key={i}>{(b.items || []).map((item, j) => <li key={j}>{item}</li>)}</Lista>;
+        }
         if (b.type === "image") {
           return (
             <figure key={i} style={{ margin: "0 0 32px" }}>

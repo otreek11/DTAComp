@@ -12,7 +12,7 @@ export function ConfirmModal({ open, onCancel, onConfirm, title, message, cancel
     <Modal open={open} onClose={busy ? undefined : onCancel} labelledBy={title ? `${id}-t` : `${id}-d`} describedBy={`${id}-d`} closeOnBackdrop={!busy}>
       <div className="dta-modal__body">
         {title && <h2 id={`${id}-t`} className="dta-serif dta-modal__title">{title}</h2>}
-        <p id={`${id}-d`} className="dta-modal__text">{message}</p>
+        <div id={`${id}-d`} className="dta-modal__text">{message}</div>
         <div className="dta-modal__actions">
           <Button onClick={onCancel} disabled={busy}>{cancelLabel}</Button>
           <Button variant="primary" onClick={onConfirm} disabled={busy} data-autofocus>{confirmLabel}</Button>

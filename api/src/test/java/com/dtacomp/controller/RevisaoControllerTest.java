@@ -16,7 +16,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.dtacomp.api.ApiApplication;
+import com.dtacomp.api.schema.classes.Conteudo;
 import com.dtacomp.api.schema.classes.Conteudo.StatusConteudo;
+import com.dtacomp.api.schema.classes.Conteudo.TipoConteudo;
+import com.dtacomp.api.schema.classes.Revisao;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
 import com.dtacomp.dto.conteudo.ConteudoResumoResponse;
@@ -97,6 +100,37 @@ class RevisaoControllerTest {
         assertThat(pageable.getValue().getPageNumber()).isEqualTo(2);
         assertThat(pageable.getValue().getPageSize()).isEqualTo(5);
         assertThat(pageable.getValue().getSort().getOrderFor("data").isAscending()).isTrue();
+    }
+
+    // ---------- GET /revisoes/minhas ----------
+
+    @Test
+    void minhas_membro_retorna403() throws Exception {
+        mockMvc.perform(get("/revisoes/minhas").with(como(TipoPerfil.MEMBRO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void minhas_revisor_listaMaisRecentesPrimeiro() throws Exception {
+        Usuario revisor = usuario(TipoPerfil.REVISOR);
+        Conteudo conteudo = Conteudo.builder()
+                .id(UUID.randomUUID()).titulo("Trabalho").tipo(TipoConteudo.TEXTO).build();
+        Revisao antiga = Revisao.builder().id(UUID.randomUUID()).conteudo(conteudo)
+                .status(StatusConteudo.DEVOLVIDO).parecerHumano("corrigir")
+                .dataRevisao(LocalDate.of(2026, 1, 1)).build();
+        Revisao recente = Revisao.builder().id(UUID.randomUUID()).conteudo(conteudo)
+                .status(StatusConteudo.PUBLICADO).dataRevisao(LocalDate.of(2026, 2, 1)).build();
+        when(revisaoService.buscarPorRevisor(revisor.getId())).thenReturn(List.of(antiga, recente));
+
+        mockMvc.perform(get("/revisoes/minhas").with(como(revisor)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].status").value("publicado"))
+                .andExpect(jsonPath("$[1].status").value("devolvido"))
+                .andExpect(jsonPath("$[1].parecer").value("corrigir"))
+                .andExpect(jsonPath("$[1].idConteudo").value(conteudo.getId().toString()))
+                .andExpect(jsonPath("$[1].tituloConteudo").value("Trabalho"))
+                .andExpect(jsonPath("$[1].tipoConteudo").value("texto"));
     }
 
     // ---------- POST /revisoes ----------
