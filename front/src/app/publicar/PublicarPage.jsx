@@ -19,17 +19,13 @@ import {
   criarConteudoPDF,
   atualizarConteudoPDF,
 } from "../../services/api.js";
+import { useAuth } from "../../auth/AuthContext.jsx";
+import { useNav } from "../../nav/NavContext.jsx";
 import "./publicar.css";
 
 const CHAVE_RASCUNHO = "dtacomp_rascunho_publicar";
 const MAX_RESUMO = 300;
 const MAX_PDF_BYTES = 20 * 1024 * 1024; // 20 MB (mesmo limite do backend)
-
-const NAV_PUBLICAR = [
-  { label: "Explorar", href: "/" },
-  { label: "Meus trabalhos", href: "/dashboard" },
-  { label: "Publicar", href: "/publicar", current: true },
-];
 
 const MODOS = [
   { id: "texto", label: "Escrever" },
@@ -363,7 +359,9 @@ function lerRascunhoInicial() {
   }
 }
 
-export function PublicarPage({ user = null, onSignIn }) {
+export function PublicarPage() {
+  const { usuario: user } = useAuth();
+  const { search } = useNav();
   const textareaRef = useRef(null);
   const inputImagemRef = useRef(null);
   const inputPdfRef = useRef(null);
@@ -399,23 +397,21 @@ export function PublicarPage({ user = null, onSignIn }) {
   const [arrastandoPdf, setArrastandoPdf] = useState(false);
 
   const carregarMeusTrabalhos = useCallback(async () => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("dtacomp_token") : null;
-    if (!token) return;
+    if (!user) return;
     try {
       const res = await fetchMeusConteudos({ size: 10, sort: "data,desc" });
       setMeusTrabalhos(res.content || []);
     } catch {
       // Mantém estado atual caso não autenticado ou offline
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     let ativo = true;
     fetchTags().then((lista) => {
       if (ativo) setTagsCadastradas(lista);
     });
-    const token = typeof window !== "undefined" ? localStorage.getItem("dtacomp_token") : null;
-    if (token) {
+    if (user) {
       fetchMeusConteudos({ size: 10, sort: "data,desc" })
         .then((res) => {
           if (ativo) setMeusTrabalhos(res.content || []);
@@ -426,6 +422,17 @@ export function PublicarPage({ user = null, onSignIn }) {
       ativo = false;
     };
   }, [user]);
+
+  // /publicar?editar=<id>: abre direto a correção de um trabalho devolvido (vindo de Meus trabalhos).
+  const idParaEditar = new URLSearchParams(search || "").get("editar");
+  const editarAbertoRef = useRef(null);
+  useEffect(() => {
+    if (!idParaEditar || !user || editarAbertoRef.current === idParaEditar) return;
+    editarAbertoRef.current = idParaEditar;
+    iniciarCorrecao({ id: idParaEditar });
+    // iniciarCorrecao só lê setters estáveis; roda uma vez por id.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idParaEditar, user]);
 
   function limparFeedback() {
     if (mensagemSucesso) setMensagemSucesso("");
@@ -601,14 +608,7 @@ export function PublicarPage({ user = null, onSignIn }) {
   }
 
   function obterEmailAutor() {
-    if (user?.email) return user.email;
-    try {
-      const salvo = JSON.parse(localStorage.getItem("dtacomp_user") || "null");
-      if (salvo?.email) return salvo.email;
-    } catch {
-      // ignora
-    }
-    return null;
+    return user?.email ?? null;
   }
 
   function montarListaTags() {
@@ -792,11 +792,7 @@ export function PublicarPage({ user = null, onSignIn }) {
 
   return (
     <div className="dta dta-publicar">
-      <SiteHeader
-        user={user || { nome: "[Nome do membro]" }}
-        nav={NAV_PUBLICAR}
-        onSignIn={onSignIn}
-      />
+      <SiteHeader />
 
       <main className="dta-wrap">
         <div className="dta-publicar__grid">

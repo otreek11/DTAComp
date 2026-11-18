@@ -60,12 +60,7 @@ public class AuthController {
         Usuario usuario = (Usuario) authentication.getPrincipal();
         String token = jwtTokenProvider.generateToken(usuario);
 
-        return ResponseEntity.ok(new AuthResponse(
-                token,
-                usuario.getEmail(),
-                usuario.getPerfil().getDescricao(),
-                usuario.getId()
-        ));
+        return ResponseEntity.ok(AuthResponse.from(usuario, token));
     }
 
     @PostMapping("/register")
@@ -93,12 +88,7 @@ public class AuthController {
 
         String token = jwtTokenProvider.generateToken(usuario);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(
-                token,
-                usuario.getEmail(),
-                usuario.getPerfil().getDescricao(),
-                usuario.getId()
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.from(usuario, token));
     }
 
     @GetMapping("/me")
@@ -107,12 +97,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(new AuthResponse(
-                null,
-                usuario.getEmail(),
-                usuario.getPerfil().getDescricao(),
-                usuario.getId()
-        ));
+        return ResponseEntity.ok(AuthResponse.from(usuario, null));
     }
 
     @GetMapping("/instituicoes")

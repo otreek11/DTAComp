@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { tokens } from "../../tokens.js";
 import { useNav } from "../../nav/NavContext.jsx";
+import { useAuth } from "../../auth/AuthContext.jsx";
 import { AuthLayout } from "../../components/base/AuthLayout.jsx";
 import { Field } from "../../components/base/Field.jsx";
 import { LoginForm } from "../../components/login/LoginForm.jsx";
@@ -13,6 +14,7 @@ import { loginUsuario } from "../../services/api.js";
  */
 export function LoginPage({ onNavigateToSignUp, onSuccess }) {
   const { Link } = useNav();
+  const { entrar } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -68,8 +70,7 @@ export function LoginPage({ onNavigateToSignUp, onSuccess }) {
       });
 
       if (response?.token) {
-        localStorage.setItem("dtacomp_token", response.token);
-        localStorage.setItem("dtacomp_user", JSON.stringify(response));
+        entrar(response);
       }
 
       setSuccess(true);

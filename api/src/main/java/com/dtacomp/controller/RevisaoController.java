@@ -4,6 +4,9 @@ import com.dtacomp.api.schema.classes.Conteudo;
 import com.dtacomp.api.schema.classes.Usuario;
 import com.dtacomp.dto.conteudo.ConteudoResumoResponse;
 import com.dtacomp.dto.revisao.RevisaoRequest;
+import com.dtacomp.dto.revisao.RevisaoResumoResponse;
+import java.util.Comparator;
+import java.util.List;
 import com.dtacomp.service.ConteudoConsultaService;
 import com.dtacomp.service.ConteudoFiltro;
 import com.dtacomp.service.RevisaoService;
@@ -48,6 +51,22 @@ public class RevisaoController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "data"));
         return new PagedModel<>(consultaService.pesquisar(filtro, pageable));
+    }
+
+    /** Revisões já registradas pelo revisor autenticado, mais recentes primeiro. */
+    @GetMapping("/minhas")
+    public List<RevisaoResumoResponse> minhasRevisoes(@AuthenticationPrincipal Usuario revisor) {
+        // dataRevisao não tem hora: inverte a ordem de inserção para que, no mesmo dia,
+        // a revisão mais recente venha primeiro (o sort abaixo é estável).
+        List<RevisaoResumoResponse> lista = new java.util.ArrayList<>(
+                revisaoService.buscarPorRevisor(revisor.getId()).stream()
+                        .map(RevisaoResumoResponse::from)
+                        .toList());
+        java.util.Collections.reverse(lista);
+        return lista.stream()
+                .sorted(Comparator.comparing(RevisaoResumoResponse::data,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
     }
 
     @PostMapping

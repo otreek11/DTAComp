@@ -109,7 +109,10 @@ class AdminControllerTest {
         mockMvc.perform(get("/admin/usuarios").with(como(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].email").value("membro@teste.com"));
+                .andExpect(jsonPath("$[0].email").value("membro@teste.com"))
+                .andExpect(jsonPath("$[0].perfil").value("membro"))
+                .andExpect(jsonPath("$[0].senhaHash").doesNotExist())
+                .andExpect(jsonPath("$[0].authorities").doesNotExist());
     }
 
     @Test

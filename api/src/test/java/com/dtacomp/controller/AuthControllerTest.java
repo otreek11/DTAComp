@@ -65,7 +65,9 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isString())
                 .andExpect(jsonPath("$.email").value(uniqueEmail))
-                .andExpect(jsonPath("$.perfil").value("membro"));
+                .andExpect(jsonPath("$.perfil").value("membro"))
+                .andExpect(jsonPath("$.nome").value("Novo Usuario"))
+                .andExpect(jsonPath("$.instituicao.id").value(instituicao.getId().toString()));
 
         // 2. Registro duplicado -> Conflito (409)
         mockMvc.perform(post("/auth/register")
@@ -80,7 +82,8 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginReq)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isString())
-                .andExpect(jsonPath("$.email").value(uniqueEmail));
+                .andExpect(jsonPath("$.email").value(uniqueEmail))
+                .andExpect(jsonPath("$.nome").value("Novo Usuario"));
 
         // 4. Login com senha errada (401)
         LoginRequest badLogin = new LoginRequest(uniqueEmail, "senhaErrada");

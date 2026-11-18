@@ -1,12 +1,14 @@
 package com.dtacomp.config;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.dtacomp.api.schema.classes.Instituicao;
 import com.dtacomp.api.schema.repositories.InstituicaoRepository;
 
 @Component
+@Order(1)
 public class DataSeeder implements CommandLineRunner {
 
     private final InstituicaoRepository instituicaoRepository;
