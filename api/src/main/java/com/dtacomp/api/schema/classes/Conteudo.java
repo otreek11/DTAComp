@@ -4,10 +4,8 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,7 +43,7 @@ public class Conteudo {
     @Column(name="titulo")
     private String titulo;
 
-    @Column(name="resumo")
+    @Column(name="resumo", columnDefinition = "text")
     private String resumo;
 
     @Column(name="tipo")
@@ -55,7 +53,6 @@ public class Conteudo {
     private StatusConteudo status;
 
     @Column(name="data")
-    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
     private LocalDate data;
 
     @Column(name="id_externo")

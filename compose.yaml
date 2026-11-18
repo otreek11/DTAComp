@@ -1,0 +1,111 @@
+# Ambiente local com a mesma topologia da produção, um serviço por container:
+#   postgres    -> Supabase        (banco)
+#   rustfs      -> Cloudflare R2   (imagens e PDFs, API compatível com S3)
+#   api         -> Render          (Spring Boot)
+#   front       -> Vercel          (React servido por Nginx)
+#
+# Stack completa:      docker compose up -d --build      -> http://localhost:8081
+# Só infraestrutura:   docker compose up -d postgres rustfs bucket-init
+#                      (e rode ./mvnw / npm run dev fora do Docker)
+#
+# Copie .env.example para .env antes de subir.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dtacomp}
+      POSTGRES_USER: ${POSTGRES_USER:-dtacomp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dtacomp}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rustfs:
+    image: rustfs/rustfs:1.0.6
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-dtacomp}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:-dtacomp-s3-secret}
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+    ports:
+      - "127.0.0.1:9000:9000"   # API S3
+      - "127.0.0.1:9001:9001"   # console web
+    volumes:
+      - objetos:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  # Cria o bucket (se ainda não existir) e encerra
+  bucket-init:
+    image: amazon/aws-cli:2.41.0
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-dtacomp}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-dtacomp-s3-secret}
+      AWS_DEFAULT_REGION: us-east-1
+      BUCKET: ${S3_BUCKET:-dtacomp}
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket "$$BUCKET" 2>/dev/null
+        || aws --endpoint-url http://rustfs:9000 s3api create-bucket --bucket "$$BUCKET"
+    restart: "no"
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      bucket-init:
+        condition: service_completed_successfully
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-dtacomp}
+      DB_USERNAME: ${POSTGRES_USER:-dtacomp}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-dtacomp}
+      # Default apenas para uso local; em produção (Render) JWT_SECRET é obrigatório
+      JWT_SECRET: ${JWT_SECRET:-dtacomp-local-docker-secret-change-me-minimum-256-bits}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081}
+      STORAGE_TIPO: s3
+      S3_ENDPOINT: http://rustfs:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: ${S3_BUCKET:-dtacomp}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-dtacomp}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-dtacomp-s3-secret}
+      S3_PATH_STYLE: "true"
+    # Sem porta publicada: acessada apenas pelo front (rede interna), como em produção.
+    # Para depurar direto, descomente:
+    # ports:
+    #   - "127.0.0.1:8080:8080"
+
+  front:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${FRONT_PORT:-8081}:80"
+
+volumes:
+  pgdata:
+  objetos:

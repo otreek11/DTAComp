@@ -36,6 +36,6 @@ public class ConteudoTexto {
     @OneToMany(mappedBy = "conteudoTexto")
     private Set<Imagem> imagens;
 
-    @Column(name = "corpo_html")
+    @Column(name = "corpo_html", columnDefinition = "text")
     private String corpoHtml;
 }

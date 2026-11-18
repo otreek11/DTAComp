@@ -23,7 +23,7 @@ public class UsuarioRepositoryTest {
     @Test 
     public void deveEncontrarUsuarioPorEmail() {
         //Arrange
-        usuarioRepository.save(Usuario.builder().email("teste@teste.com").nome("Teste").perfil(Usuario.TipoPerfil.MEMBRO).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).email("teste@teste.com").nome("Teste").perfil(Usuario.TipoPerfil.MEMBRO).build());
         
         //Act
         Optional<Usuario> encontrado = usuarioRepository.findByEmail("teste@teste.com");
@@ -45,9 +45,9 @@ public class UsuarioRepositoryTest {
     @Test 
     public void deveEncontrarUsuariosPorPerfil() {
         //Arrange
-        usuarioRepository.save(Usuario.builder().email("membroa@teste.com").nome("Membro A").perfil(TipoPerfil.MEMBRO).build());
-        usuarioRepository.save(Usuario.builder().email("membrob@teste.com").nome("Membro B").perfil(TipoPerfil.MEMBRO).build());
-        usuarioRepository.save(Usuario.builder().email("revisor@teste.com").nome("Revisor").perfil(TipoPerfil.REVISOR).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).email("membroa@teste.com").nome("Membro A").perfil(TipoPerfil.MEMBRO).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).email("membrob@teste.com").nome("Membro B").perfil(TipoPerfil.MEMBRO).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).email("revisor@teste.com").nome("Revisor").perfil(TipoPerfil.REVISOR).build());
         
         //Act
         List<Usuario> membros = usuarioRepository.findByPerfil(TipoPerfil.MEMBRO);
@@ -60,8 +60,8 @@ public class UsuarioRepositoryTest {
     public void deveEncontrarUsuariosPorInstituicao() {
         //Arrange
         Instituicao instituicao = instituicaoRepository.save(Instituicao.builder().nome("Intituicao Teste").sigla("IT").build());
-        usuarioRepository.save(Usuario.builder().nome("Teste").email("teste@teste.com").perfil(TipoPerfil.MEMBRO).instituicao(instituicao).build());
-        usuarioRepository.save(Usuario.builder().nome("Outro").email("outro@teste.com").perfil(TipoPerfil.MEMBRO).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Teste").email("teste@teste.com").perfil(TipoPerfil.MEMBRO).instituicao(instituicao).build());
+        usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Outro").email("outro@teste.com").perfil(TipoPerfil.MEMBRO).build());
         //Act
         List<Usuario> resultado = usuarioRepository.findByInstituicao_Id(instituicao.getId());
 

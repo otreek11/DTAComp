@@ -19,6 +19,8 @@ import com.dtacomp.api.schema.classes.Usuario.TipoPerfil;
 @DataJpaTest 
 public class RevisaoRepositoryTest {
     @Autowired
+    private InstituicaoRepository instituicaoRepository;
+    @Autowired
     private RevisaoRepository revisaoRepository;
     @Autowired 
     private UsuarioRepository usuarioRepository;
@@ -27,7 +29,7 @@ public class RevisaoRepositoryTest {
 
     @Test 
     public void deveEncontrarRevisaoPorRevisorId() {
-        Usuario usuario = usuarioRepository.save(Usuario.builder().nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
+        Usuario usuario = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
         Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Teste").resumo("resumo").tipo(TipoConteudo.TEXTO).status(StatusConteudo.REVISAO).data(LocalDate.of(2026,9,16)).build());
         Revisao revisao = revisaoRepository.save(Revisao.builder().conteudo(conteudo).revisor(usuario).status(conteudo.getStatus()).parecerHumano("Dá pra melhorar").build());
 
@@ -42,7 +44,7 @@ public class RevisaoRepositoryTest {
 
     @Test 
     public void deveEncontrarRevisaoPorConteudoId() {
-        Usuario usuario = usuarioRepository.save(Usuario.builder().nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
+        Usuario usuario = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
         Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Teste").resumo("resumo").tipo(TipoConteudo.TEXTO).status(StatusConteudo.REVISAO).data(LocalDate.of(2026,9,16)).build());
         Revisao revisao = revisaoRepository.save(Revisao.builder().conteudo(conteudo).revisor(usuario).status(conteudo.getStatus()).parecerHumano("Dá pra melhorar").build());
 
@@ -57,7 +59,7 @@ public class RevisaoRepositoryTest {
 
     @Test 
     public void deveEncontrarRevisaoPorRevisorIdEStatus() {
-        Usuario usuario = usuarioRepository.save(Usuario.builder().nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
+        Usuario usuario = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Teste").email("teste@teste.com").perfil(TipoPerfil.REVISOR).build());
         Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Teste").resumo("resumo").tipo(TipoConteudo.TEXTO).status(StatusConteudo.REVISAO).data(LocalDate.of(2026,9,16)).build());
         Revisao revisao = revisaoRepository.save(Revisao.builder().conteudo(conteudo).revisor(usuario).status(conteudo.getStatus()).parecerHumano("Dá pra melhorar").build());
 

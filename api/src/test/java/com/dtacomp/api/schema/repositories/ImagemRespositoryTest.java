@@ -24,7 +24,7 @@ public class ImagemRespositoryTest {
     
     @Test 
     public void deveEncontrarImagemPeloConteudoTextoId() {
-        Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Artigo").tipo(Conteudo.TipoConteudo.TEXTO).build());
+        Conteudo conteudo = conteudoRepository.save(RepositoryFixtures.conteudo("Artigo", Conteudo.TipoConteudo.TEXTO).build());
         ConteudoTexto conteudo_texto = conteudoTextoRepository.save(ConteudoTexto.builder().conteudo(conteudo).corpoHtml("Lorem Ipsum Dolor").build());
         Imagem imagem = imagemRepository.save(Imagem.builder().conteudoTexto(conteudo_texto).urlImage("https://exemplo.com/image.png").legenda("Teste").build());
         
@@ -37,7 +37,7 @@ public class ImagemRespositoryTest {
 
     @Test 
     public void naoDeveEncontrarImagemQuandoConteudoTextoNaoPossui() {
-        Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Artigo sem imagens").tipo(Conteudo.TipoConteudo.TEXTO).build());
+        Conteudo conteudo = conteudoRepository.save(RepositoryFixtures.conteudo("Artigo sem imagens", Conteudo.TipoConteudo.TEXTO).build());
         ConteudoTexto conteudoTexto = conteudoTextoRepository.save(ConteudoTexto.builder().conteudo(conteudo).corpoHtml("Lorem Ipsum Dolor").build());
 
         List<Imagem> encontrada = imagemRepository.findByConteudoTexto_IdConteudo(conteudoTexto.getIdConteudo());

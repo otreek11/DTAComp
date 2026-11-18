@@ -6,19 +6,17 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+/** Armazenamento em disco local (padrão; usado em dev e nos testes). */
 @Service
+@ConditionalOnProperty(name = "app.storage.tipo", havingValue = "local", matchIfMissing = true)
 public class ArmazenamentoLocalService implements ArmazenamentoService {
-
-    private static final Pattern PASTA_OU_EXTENSAO = Pattern.compile("[a-z0-9]{1,10}");
 
     private final Path raiz;
 
@@ -28,14 +26,7 @@ public class ArmazenamentoLocalService implements ArmazenamentoService {
 
     @Override
     public String salvar(String pasta, String extensao, InputStream conteudo) {
-        String pastaNorm = pasta == null ? "" : pasta.toLowerCase(Locale.ROOT);
-        String extNorm = extensao == null ? "" : extensao.toLowerCase(Locale.ROOT);
-        if (!PASTA_OU_EXTENSAO.matcher(pastaNorm).matches()
-                || !PASTA_OU_EXTENSAO.matcher(extNorm).matches()) {
-            throw new IllegalStateException("Pasta ou extensão de armazenamento inválida");
-        }
-
-        String chave = pastaNorm + "/" + UUID.randomUUID() + "." + extNorm;
+        String chave = ChavesArmazenamento.gerar(pasta, extensao);
         Path destino = resolver(chave);
         try {
             Files.createDirectories(destino.getParent());

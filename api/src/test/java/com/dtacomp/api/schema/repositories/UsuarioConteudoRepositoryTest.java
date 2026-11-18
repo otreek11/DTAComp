@@ -17,6 +17,8 @@ import com.dtacomp.api.schema.classes.UsuarioConteudo;
 @DataJpaTest 
 public class UsuarioConteudoRepositoryTest {
     @Autowired
+    private InstituicaoRepository instituicaoRepository;
+    @Autowired
     private UsuarioConteudoRepository usuarioConteudoRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -25,9 +27,9 @@ public class UsuarioConteudoRepositoryTest {
 
     @Test 
     public void deveEncontrarAutoresDoConteudoEmOrdem() {
-        Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Artigo").tipo(TipoConteudo.TEXTO).build());
-        Usuario autor1 = usuarioRepository.save(Usuario.builder().nome("Autor 1").email("a1@teste.com").perfil(TipoPerfil.MEMBRO).build());
-        Usuario autor2 = usuarioRepository.save(Usuario.builder().nome("Autor 2").email("a2@teste.com").perfil(TipoPerfil.MEMBRO).build());
+        Conteudo conteudo = conteudoRepository.save(RepositoryFixtures.conteudo("Artigo", TipoConteudo.TEXTO).build());
+        Usuario autor1 = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Autor 1").email("a1@teste.com").perfil(TipoPerfil.MEMBRO).build());
+        Usuario autor2 = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Autor 2").email("a2@teste.com").perfil(TipoPerfil.MEMBRO).build());
 
         usuarioConteudoRepository.save(criarUsuarioConteudo(autor2, conteudo, 1));
         usuarioConteudoRepository.save(criarUsuarioConteudo(autor1, conteudo, 0));
@@ -41,8 +43,8 @@ public class UsuarioConteudoRepositoryTest {
 
     @Test 
     public void deveEncontrarConteudoPorAutor() {
-        Usuario autor = usuarioRepository.save(Usuario.builder().nome("Autor").email("autor@teste.com").perfil(TipoPerfil.MEMBRO).build());
-        Conteudo conteudo = conteudoRepository.save(Conteudo.builder().titulo("Artigo do Autor").tipo(TipoConteudo.TEXTO).build());
+        Usuario autor = usuarioRepository.save(RepositoryFixtures.usuario(instituicaoRepository).nome("Autor").email("autor@teste.com").perfil(TipoPerfil.MEMBRO).build());
+        Conteudo conteudo = conteudoRepository.save(RepositoryFixtures.conteudo("Artigo do Autor", TipoConteudo.TEXTO).build());
         usuarioConteudoRepository.save(criarUsuarioConteudo(autor, conteudo, 0));
 
         List<Conteudo> conteudos = usuarioConteudoRepository.findConteudosPorAutor(autor.getId());
